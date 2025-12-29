@@ -1,13 +1,12 @@
 /* ===== Базовые стили ===== */
 :root {
     /* Цветовая палитра */
-    --color-cream: #FFFBF5;
-    --color-olive: #8A9A5B;
-    --color-terracotta: #C46D5E;
-    --color-chocolate: #5C4033;
-    --color-gray: #333333;
-    --color-light-gray: #F5F5F5;
-    --color-white: #FFFFFF;
+    --color-parchment: #F5F1E8;  /* Пергамент */
+    --color-sand: #E2D8C6;       /* Песок */
+    --color-olive: #8A9A5B;      /* Олива */
+    --color-sage: #B8C2A2;       /* Шалфей */
+    --color-bark: #6D5D4B;       /* Кора */
+    --color-olivewood: #7D8B55;  /* Оливковое дерево */
     
     /* Шрифты */
     --font-handwriting: 'Great Vibes', cursive;
@@ -36,7 +35,7 @@ html {
 body {
     font-family: var(--font-main);
     color: var(--color-gray);
-    background-color: var(--color-cream);
+    background-color: var(--color-parchment);
     line-height: 1.6;
     overflow-x: hidden;
 }
@@ -122,7 +121,7 @@ section {
 
 /* ===== ХЕДЕР ===== */
 .header {
-    background: linear-gradient(135deg, var(--color-cream) 0%, #f9f2e9 100%);
+    background: linear-gradient(135deg, var(--color-parchment) 0%, var(--color-sand) 100%);
     min-height: 100vh;
     display: flex;
     align-items: center;
