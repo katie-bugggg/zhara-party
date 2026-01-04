@@ -1,389 +1,720 @@
-// Основной файл скриптов для свадебного лендинга
+// Гамбургер меню
+const hamburger = document.getElementById('hamburger');
+const menuLinks = document.querySelector('.menu-links');
 
-document.addEventListener('DOMContentLoaded', function() {
-    // 1. Инициализация Яндекс Карты
-    initYandexMap();
-    
-    // 2. Обратный отсчет до свадьбы
-    initCountdownTimer();
-    
-    // 3. Обработка формы RSVP
-    initRSVPForm();
-    
-    // 4. Динамические поля для дополнительных гостей
-    initAdditionalGuests();
-    
-    // 5. Маска для телефона
-    initPhoneMask();
-    
-    // 6. Переключение игры Memory
-    initGameToggle();
-    
-    // 7. Плавный скролл для якорных ссылок
-    initSmoothScroll();
-    
-    // 8. Анимация появления элементов при скролле
-    initScrollAnimation();
+hamburger.addEventListener('click', function() {
+    menuLinks.classList.toggle('active');
+    hamburger.classList.toggle('active');
 });
 
-// ===== 1. Яндекс Карта =====
-function initYandexMap() {
-    // Ждем загрузки API Яндекс.Карт
-    if (typeof ymaps !== 'undefined') {
-        ymaps.ready(function() {
-            try {
-                // Координаты пос. Ладыгино, Калининградская обл.
-                const map = new ymaps.Map('map-yandex', {
-                    center: [54.715, 20.134], // Примерные координаты
-                    zoom: 12,
-                    controls: ['zoomControl', 'fullscreenControl']
-                });
-                
-                // Добавляем метку
-                const placemark = new ymaps.Placemark([54.715, 20.134], {
-                    balloonContent: 'Гостевой дом "Сосны, ели и залив"<br>пос. Ладыгино, Калининградская обл.'
-                }, {
-                    preset: 'islands#greenDotIconWithCaption'
-                });
-                
-                map.geoObjects.add(placemark);
-                
-                // Открываем балун при загрузке
-                placemark.balloon.open();
-            } catch (error) {
-                console.error('Ошибка инициализации карты:', error);
-                document.getElementById('map-yandex').innerHTML = 
-                    '<div class="map-error" style="text-align: center; padding: 50px; background: #f8f8f8; border-radius: 8px;">' +
-                    '<p>Карта временно недоступна</p>' +
-                    '<p>Координаты: пос. Ладыгино, Калининградская область</p>' +
-                    '</div>';
-            }
-        });
-    }
-}
-
-// ===== 2. Таймер обратного отсчета =====
-function initCountdownTimer() {
-    const weddingDate = new Date('June 13, 2026 16:00:00 GMT+3:00').getTime();
-    
-    function updateCountdown() {
-        const now = new Date().getTime();
-        const timeLeft = weddingDate - now;
-        
-        if (timeLeft < 0) {
-            document.getElementById('days').textContent = '00';
-            document.getElementById('hours').textContent = '00';
-            document.getElementById('minutes').textContent = '00';
-            document.getElementById('seconds').textContent = '00';
-            return;
-        }
-        
-        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-        
-        document.getElementById('days').textContent = days.toString().padStart(2, '0');
-        document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-        document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-        document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
-    }
-    
-    // Обновляем сразу и затем каждую секунду
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
-}
-
-// ===== 3. Обработка формы RSVP =====
-function initRSVPForm() {
-    const form = document.getElementById('wedding-form');
-    if (!form) return;
-    
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Проверка reCAPTCHA
-        const recaptchaResponse = grecaptcha.getResponse();
-        if (!recaptchaResponse) {
-            showFormMessage('Пожалуйста, подтвердите, что вы не робот', 'error');
-            return;
-        }
-        
-        // Сбор данных формы
-        const formData = new FormData(form);
-        const data = {
-            timestamp: new Date().toLocaleString('ru-RU'),
-            name: formData.get('guest-name'),
-            guestCount: formData.get('guest-count'),
-            allergies: formData.get('allergies'),
-            drinks: Array.from(form.querySelectorAll('input[name="drinks"]:checked')).map(cb => cb.value).join(', '),
-            stayOption: formData.get('stay-option'),
-            car: formData.get('car'),
-            track: formData.get('track'),
-            phone: formData.get('phone'),
-            'g-recaptcha-response': recaptchaResponse
-        };
-        
-        // Добавляем имена дополнительных гостей
-        const additionalGuests = document.querySelectorAll('.additional-guest-field input');
-        if (additionalGuests.length > 0) {
-            data.additionalGuests = Array.from(additionalGuests).map(input => input.value).join('; ');
-        }
-        
-        // Отправка данных (заглушка - здесь нужно подключить Google Apps Script)
-        sendFormData(data);
+// Закрытие меню при клике на ссылку
+document.querySelectorAll('.menu-links a').forEach(link => {
+    link.addEventListener('click', function() {
+        menuLinks.classList.remove('active');
+        hamburger.classList.remove('active');
     });
-}
+});
 
-// Заглушка для отправки формы (реализация через Google Apps Script)
-function sendFormData(data) {
-    // Показываем индикатор загрузки
-    const submitBtn = document.querySelector('.btn-submit');
-    const originalText = submitBtn.textContent;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
-    submitBtn.disabled = true;
-    
-    // В реальном проекте здесь будет fetch запрос к Google Apps Script
-    // Пример:
-    // fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec', {
-    //     method: 'POST',
-    //     body: JSON.stringify(data)
-    // })
-    
-    // Имитация отправки
-    setTimeout(() => {
-        showFormMessage('Спасибо! Ваша анкета успешно отправлена. Ждем вас на нашей свадьбе!', 'success');
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-        
-        // Сброс reCAPTCHA
-        grecaptcha.reset();
-        
-        // Очистка формы (кроме некоторых полей)
-        document.getElementById('wedding-form').reset();
-        document.getElementById('additional-guests').innerHTML = '';
-    }, 1500);
-}
-
-function showFormMessage(message, type) {
-    const messageDiv = document.getElementById('form-message');
-    messageDiv.textContent = message;
-    messageDiv.className = `form-message ${type}`;
-    
-    // Автоматическое скрытие через 5 секунд
-    setTimeout(() => {
-        messageDiv.textContent = '';
-        messageDiv.className = 'form-message';
-    }, 5000);
-}
-
-// ===== 4. Динамические поля для дополнительных гостей =====
-function initAdditionalGuests() {
-    const guestCountSelect = document.getElementById('guest-count');
-    if (!guestCountSelect) return;
-    
-    guestCountSelect.addEventListener('change', function() {
-        const count = parseInt(this.value);
-        const container = document.getElementById('additional-guests');
-        container.innerHTML = '';
-        
-        if (count > 1) {
-            for (let i = 2; i <= count; i++) {
-                const field = document.createElement('div');
-                field.className = 'additional-guest-field';
-                field.innerHTML = `
-                    <label>Имя и фамилия гостя ${i}:</label>
-                    <input type="text" name="guest-${i}" placeholder="Имя и фамилия" required>
-                `;
-                container.appendChild(field);
-            }
-        }
-    });
-}
-
-// ===== 5. Маска для телефона =====
-function initPhoneMask() {
-    const phoneInput = document.getElementById('phone');
-    if (!phoneInput) return;
-    
-    phoneInput.addEventListener('input', function(e) {
-        let value = this.value.replace(/\D/g, '');
-        
-        if (value.length > 0) {
-            if (value[0] === '7' || value[0] === '8') {
-                value = value.substring(1);
-            }
-            
-            let formatted = '+7 ';
-            
-            if (value.length > 0) {
-                formatted += '(' + value.substring(0, 3);
-            }
-            if (value.length >= 4) {
-                formatted += ') ' + value.substring(3, 6);
-            }
-            if (value.length >= 7) {
-                formatted += '-' + value.substring(6, 8);
-            }
-            if (value.length >= 9) {
-                formatted += '-' + value.substring(8, 10);
-            }
-            
-            this.value = formatted;
-        }
-    });
-}
-
-// ===== 6. Переключение игры Memory =====
-function initGameToggle() {
-    const toggleBtn = document.getElementById('toggle-game');
-    const gameContainer = document.getElementById('memory-game-container');
-    
-    if (!toggleBtn || !gameContainer) return;
-    
-    toggleBtn.addEventListener('click', function() {
-        if (gameContainer.style.display === 'none') {
-            gameContainer.style.display = 'block';
-            toggleBtn.innerHTML = 'Скрыть игру <i class="fas fa-times"></i>';
-            
-            // Инициализируем игру при первом открытии
-            if (!window.gameInitialized) {
-                window.gameInitialized = true;
-                // Инициализация игры будет в game.js
-            }
-        } else {
-            gameContainer.style.display = 'none';
-            toggleBtn.innerHTML = 'Сыграть в Memory <i class="fas fa-gamepad"></i>';
-        }
-    });
-}
-
-// ===== 7. Плавный скролл =====
-function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            const href = this.getAttribute('href');
-            
-            if (href === '#') return;
-            
+// Плавная прокрутка для меню
+document.querySelectorAll('.fixed-menu a, .scroll-down, .logo, .btn[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        if (this.getAttribute('href') && this.getAttribute('href').startsWith('#')) {
             e.preventDefault();
-            const targetElement = document.querySelector(href);
-            
+
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+
             if (targetElement) {
                 window.scrollTo({
                     top: targetElement.offsetTop - 80,
                     behavior: 'smooth'
                 });
             }
-        });
-    });
-}
-
-// ===== 8. Анимация появления при скролле =====
-function initScrollAnimation() {
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-    };
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('animate-in');
-            }
-        });
-    }, observerOptions);
-    
-    // Наблюдаем за всеми секциями
-    document.querySelectorAll('section').forEach(section => {
-        observer.observe(section);
-    });
-    // ===== НАВИГАЦИЯ =====
-function initNavigation() {
-    const nav = document.getElementById('mainNav');
-    const navToggle = document.getElementById('navToggle');
-    const navMenu = document.getElementById('navMenu');
-    const navLinks = document.querySelectorAll('.nav-link');
-    
-    // Переключение мобильного меню
-    if (navToggle) {
-        navToggle.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-            navToggle.classList.toggle('active');
-        });
-    }
-    
-    // Закрытие меню при клике на ссылку
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            navMenu.classList.remove('active');
-            navToggle.classList.remove('active');
-        });
-    });
-    
-    // Изменение активного пункта при скролле
-    function updateActiveNavLink() {
-        const scrollPos = window.scrollY + 100;
-        
-        navLinks.forEach(link => {
-            const section = document.querySelector(link.hash);
-            if (!section) return;
-            
-            const sectionTop = section.offsetTop;
-            const sectionBottom = sectionTop + section.offsetHeight;
-            
-            if (scrollPos >= sectionTop && scrollPos <= sectionBottom) {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
-            }
-        });
-    }
-    
-    // Плавный скролл для навигации
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href');
-            
-            if (targetId === '#') return;
-            
-            const targetSection = document.querySelector(targetId);
-            if (targetSection) {
-                window.scrollTo({
-                    top: targetSection.offsetTop - 80,
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
-    
-    // Изменение стиля навигации при скролле
-    function updateNavStyle() {
-        if (window.scrollY > 100) {
-            nav.style.padding = '10px 0';
-            nav.style.boxShadow = '0 5px 20px rgba(92, 64, 51, 0.15)';
-        } else {
-            nav.style.padding = '15px 0';
-            nav.style.boxShadow = '0 2px 20px rgba(92, 64, 51, 0.1)';
         }
-    }
-    
-    // Слушатели событий
-    window.addEventListener('scroll', () => {
-        updateActiveNavLink();
-        updateNavStyle();
     });
-    
-    // Инициализация
-    updateNavStyle();
-    updateActiveNavLink();
+});
+
+// Управление высотой меню при скролле
+let lastScrollTop = 0;
+const header = document.getElementById('header');
+
+window.addEventListener('scroll', function() {
+const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+// Если меню открыто, закрываем его при скролле
+if (menuLinks.classList.contains('active')) {
+menuLinks.classList.remove('active');
+hamburger.classList.remove('active');
 }
 
-// Добавьте вызов функции в DOMContentLoaded
+lastScrollTop = scrollTop;
+});
+
+// Закрытие меню при клике вне его области
+document.addEventListener('click', function(event) {
+const isClickInsideMenu = menuLinks.contains(event.target) || hamburger.contains(event.target);
+
+if (!isClickInsideMenu && menuLinks.classList.contains('active')) {
+menuLinks.classList.remove('active');
+hamburger.classList.remove('active');
+}
+});
+
+// Обработка формы
+document.getElementById('guest-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Здесь должна быть отправка данных в Google Sheets
+    // Для демонстрации просто показываем сообщение
+    alert('Спасибо за подтверждение! Мы добавили вас в список гостей.');
+    this.reset();
+});
+
+// Добавление полей для дополнительных гостей
+document.getElementById('guests-count').addEventListener('change', function() {
+    const guestsCount = parseInt(this.value);
+    const container = document.getElementById('additional-guests');
+
+    container.innerHTML = '';
+
+    if (guestsCount > 1) {
+        container.style.display = 'block';
+
+        for (let i = 2; i <= guestsCount; i++) {
+            const div = document.createElement('div');
+            div.className = 'form-group';
+            div.innerHTML = `
+                <label for="guest${i}">Имя и Фамилия гостя ${i}:</label>
+                <input type="text" id="guest${i}" name="guest${i}">
+            `;
+            container.appendChild(div);
+        }
+    } else {
+        container.style.display = 'none';
+    }
+});
+
+// Обработка формы
+document.getElementById('guest-form').addEventListener('submit', async function(e) {
+e.preventDefault();
+
+// Собираем данные из формы
+const formData = {
+name: document.getElementById('name').value,
+guests_count: document.getElementById('guests-count').value,
+drinks: getSelectedOptions('drinks'),
+stay: document.getElementById('stay').value,
+car: document.getElementById('car').value,
+track: document.getElementById('track').value,
+phone: document.getElementById('phone').value
+};
+
+// Собираем дополнительные имена гостей
+const additionalGuests = [];
+const guestInputs = document.querySelectorAll('#additional-guests input');
+guestInputs.forEach(input => {
+if (input.value.trim()) {
+    additionalGuests.push(input.value.trim());
+}
+});
+
+if (additionalGuests.length > 0) {
+formData.additional_guests = additionalGuests;
+}
+
+// Показываем сообщение о загрузке
+const submitBtn = this.querySelector('button[type="submit"]');
+const originalText = submitBtn.textContent;
+submitBtn.textContent = 'Отправка...';
+submitBtn.disabled = true;
+
+try {
+// Отправляем данные на Google Apps Script
+const response = await fetch('https://script.google.com/macros/s/AKfycbxQDR4UsaEklGfo0aUFbGaHFzmqTl5RKjJxJ3Ipd4e__lipkxCoH4Y7tAVu5zTCgmoO/exec', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData)
+});
+
+const result = await response.json();
+
+if (result.success) {
+    // Успешная отправка
+    showMessage('✅ Спасибо за подтверждение! Мы добавили вас в список гостей.', 'success');
+    this.reset();
+    
+    // Скрываем дополнительные поля гостей
+    document.getElementById('additional-guests').style.display = 'none';
+    document.getElementById('additional-guests').innerHTML = '';
+} else {
+    // Ошибка сервера
+    showMessage('❌ Ошибка при отправке. Пожалуйста, попробуйте еще раз.', 'error');
+    console.error('Ошибка сервера:', result.message);
+}
+
+} catch (error) {
+// Ошибка сети
+showMessage('❌ Ошибка соединения. Проверьте интернет и попробуйте еще раз.', 'error');
+console.error('Ошибка сети:', error);
+} finally {
+// Восстанавливаем кнопку
+submitBtn.textContent = originalText;
+submitBtn.disabled = false;
+}
+});
+
+// Функция для получения выбранных опций в мультиселекте
+function getSelectedOptions(selectId) {
+const select = document.getElementById(selectId);
+if (!select) return [];
+
+const selected = [];
+for (let i = 0; i < select.options.length; i++) {
+if (select.options[i].selected) {
+    selected.push(select.options[i].value);
+}
+}
+return selected;
+}
+
+// Функция для показа сообщений
+function showMessage(message, type = 'info') {
+// Удаляем предыдущие сообщения
+const existingMessage = document.querySelector('.form-message');
+if (existingMessage) {
+existingMessage.remove();
+}
+
+// Создаем новое сообщение
+const messageDiv = document.createElement('div');
+messageDiv.className = `form-message ${type}`;
+messageDiv.textContent = message;
+messageDiv.style.cssText = `
+margin: 20px 0;
+padding: 15px;
+border-radius: ${getComputedStyle(document.documentElement).getPropertyValue('--border-radius')};
+text-align: center;
+font-weight: 500;
+background-color: ${type === 'success' ? 'rgba(74, 108, 74, 0.1)' : 'rgba(255, 0, 0, 0.1)'};
+color: ${type === 'success' ? 'var(--primary-green)' : '#d32f2f'};
+border: 1px solid ${type === 'success' ? 'var(--primary-green)' : '#d32f2f'};
+`;
+
+// Добавляем сообщение перед кнопкой отправки
+const submitBtn = document.querySelector('#guest-form button[type="submit"]');
+submitBtn.parentNode.insertBefore(messageDiv, submitBtn);
+
+// Автоматически скрываем через 5 секунд
+if (type === 'success') {
+setTimeout(() => {
+    if (messageDiv.parentNode) {
+        messageDiv.style.opacity = '0';
+        messageDiv.style.transition = 'opacity 0.5s';
+        setTimeout(() => {
+            if (messageDiv.parentNode) {
+                messageDiv.remove();
+            }
+        }, 500);
+    }
+}, 5000);
+}
+}
+
+// Инициализация карты
+function initMap() {
+    // Координаты поселка Ладыгино (приблизительные)
+    const map = L.map('map').setView([54.8, 20.5], 12);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Добавляем маркер
+    L.marker([54.8, 20.5])
+        .addTo(map)
+        .bindPopup('Гостевой дом "Сосны, ели и залив"<br>пос. Ладыгино, Калининградская обл.')
+        .openPopup();
+}
+
+// Таймер обратного отсчета
+function updateCountdown() {
+const targetDate = new Date('June 13, 2026 16:00:00 GMT+0300').getTime();
+const now = new Date().getTime();
+const timeLeft = targetDate - now;
+
+if (timeLeft < 0) {
+document.getElementById('days').textContent = '000';
+document.getElementById('hours').textContent = '00';
+document.getElementById('minutes').textContent = '00';
+document.getElementById('seconds').textContent = '00';
+return;
+}
+
+const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+document.getElementById('days').textContent = days.toString().padStart(3, '0');
+document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+}
+
+// Инициализация таймера и его периодическое обновление
 document.addEventListener('DOMContentLoaded', function() {
-    // ... существующий код ...
-    initNavigation(); // ← Добавьте эту строку
+// Запускаем сразу при загрузке
+updateCountdown();
+
+// Обновляем каждую секунду
+setInterval(updateCountdown, 1000);
+
+// Также вызываем после полной загрузки страницы
+window.addEventListener('load', updateCountdown);
+});
+
+// Находим элементы
+const toggleGameBtn = document.getElementById('toggle-game-btn');
+const gameContainer = document.getElementById('game-container');
+const restartGameBtn = document.getElementById('restart-game');
+const leaderboardContainer = document.getElementById('leaderboard-container');
+const saveResultForm = document.getElementById('save-result-form');
+const saveResultBtn = document.getElementById('save-result-btn');
+const playerNameInput = document.getElementById('player-name');
+
+let gameStarted = false;
+let gameTimer = 0;
+let gameInterval = null;
+let moves = 0;
+let pairsFound = 0;
+let firstCard = null;
+let secondCard = null;
+let lockBoard = false;
+let timerRunning = false; // Флаг, что таймер запущен
+let gameActive = false; // Флаг, что игра активна (первый ход сделан)
+
+// Ключ для localStorage
+const LEADERBOARD_KEY = 'wedding_memory_leaderboard';
+
+// Обработчик кнопки "Сыграть в Memory"
+toggleGameBtn.addEventListener('click', function() {
+const isHidden = gameContainer.style.display === 'none' || gameContainer.style.display === '';
+
+if (isHidden) {
+// Показываем игру
+gameContainer.style.display = 'block';
+gameStarted = true;
+
+// Инициализируем игру, если она еще не инициализирована
+if (document.getElementById('memory-grid').children.length === 0) {
+    initGame();
+} else {
+    // Если игра уже была инициализирована, просто показываем ее
+    adjustGameForMobile();
+}
+
+// Загружаем турнирную таблицу
+loadLeaderboard();
+
+// НЕ запускаем таймер сразу, только показываем игру
+// Таймер запустится при первом клике на карточку
+
+// Меняем текст кнопки
+toggleGameBtn.textContent = 'Скрыть игру';
+
+// Плавная прокрутка к игре
+setTimeout(() => {
+    gameContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}, 100);
+} else {
+// Скрываем игру
+gameContainer.style.display = 'none';
+gameStarted = false;
+
+// Останавливаем таймер только если он был запущен
+if (timerRunning) {
+    clearInterval(gameInterval);
+    timerRunning = false;
+}
+
+// Сбрасываем флаг активности игры
+gameActive = false;
+
+// Меняем текст кнопки
+toggleGameBtn.textContent = 'Сыграть в Memory';
+}
+});
+
+// Обработчик кнопки "Начать заново"
+restartGameBtn.addEventListener('click', function() {
+resetGameState();
+initGame();
+saveResultForm.style.display = 'none';
+playerNameInput.value = '';
+
+// Сбрасываем флаг активности игры
+gameActive = false;
+
+// Останавливаем таймер если он был запущен
+if (timerRunning) {
+clearInterval(gameInterval);
+timerRunning = false;
+}
+
+// Сбрасываем отображение таймера
+document.getElementById('game-timer').textContent = '0';
+});
+
+// Кнопка сохранения результата
+saveResultBtn.addEventListener('click', function() {
+const playerName = playerNameInput.value.trim();
+
+if (!playerName) {
+alert('Пожалуйста, введите ваше имя!');
+return;
+}
+
+if (playerName.length > 20) {
+alert('Имя не должно превышать 20 символов!');
+return;
+}
+
+saveResult(playerName, moves, gameTimer);
+playerNameInput.value = '';
+saveResultForm.style.display = 'none';
+});
+
+// Функция инициализации игры
+function initGame() {
+const grid = document.getElementById('memory-grid');
+grid.innerHTML = '';
+
+const symbols = ['💍', '💐', '🥂', '🔥', '🏠', '👰', '🤵', '❤️', '🎉', '🎶', '🍖', '🌲', '👞', '🍰', '🕊️'];
+const gameSymbols = [...symbols, ...symbols]; // 30 карточек (15 пар)
+
+// Перемешиваем символы
+const shuffledSymbols = [...gameSymbols].sort(() => Math.random() - 0.5);
+
+// Создаем карточки
+shuffledSymbols.forEach((symbol, index) => {
+const card = document.createElement('div');
+card.className = 'memory-card';
+card.dataset.symbol = symbol;
+card.dataset.index = index;
+
+card.addEventListener('click', flipCard);
+grid.appendChild(card);
+});
+
+// Настраиваем адаптивность для мобильных
+adjustGameForMobile();
+}
+
+// Функция сброса состояния игры
+function resetGameState() {
+// Останавливаем таймер если он был запущен
+if (timerRunning) {
+clearInterval(gameInterval);
+timerRunning = false;
+}
+
+gameTimer = 0;
+moves = 0;
+pairsFound = 0;
+firstCard = null;
+secondCard = null;
+lockBoard = false;
+gameActive = false;
+
+document.getElementById('moves').textContent = '0';
+document.getElementById('game-timer').textContent = '0';
+document.getElementById('pairs').textContent = '0';
+}
+
+// Запуск таймера
+function startTimer() {
+if (!timerRunning) {
+gameTimer = 0;
+timerRunning = true;
+gameInterval = setInterval(() => {
+    gameTimer++;
+    document.getElementById('game-timer').textContent = gameTimer;
+}, 1000);
+}
+}
+
+// Функция переворота карточки
+function flipCard() {
+if (lockBoard) return;
+if (this === firstCard) return;
+if (this.classList.contains('matched')) return;
+
+// Запускаем таймер при первом клике на карточку
+if (!gameActive) {
+gameActive = true;
+startTimer();
+}
+
+this.classList.add('flipped');
+this.textContent = this.dataset.symbol;
+
+if (!firstCard) {
+firstCard = this;
+return;
+}
+
+secondCard = this;
+moves++;
+document.getElementById('moves').textContent = moves;
+
+checkForMatch();
+}
+
+// Проверка совпадения карточек
+function checkForMatch() {
+const isMatch = firstCard.dataset.symbol === secondCard.dataset.symbol;
+
+if (isMatch) {
+disableCards();
+pairsFound++;
+document.getElementById('pairs').textContent = pairsFound;
+
+if (pairsFound === 15) {
+    // Останавливаем таймер при завершении игры
+    if (timerRunning) {
+        clearInterval(gameInterval);
+        timerRunning = false;
+    }
+    
+    setTimeout(() => {
+        showResultModal();
+    }, 500);
+}
+} else {
+unflipCards();
+}
+}
+
+// Отключение совпавших карточек
+function disableCards() {
+firstCard.classList.add('matched');
+secondCard.classList.add('matched');
+firstCard.removeEventListener('click', flipCard);
+secondCard.removeEventListener('click', flipCard);
+
+resetBoard();
+}
+
+// Переворот несовпавших карточек обратно
+function unflipCards() {
+lockBoard = true;
+
+setTimeout(() => {
+firstCard.classList.remove('flipped');
+firstCard.textContent = '';
+secondCard.classList.remove('flipped');
+secondCard.textContent = '';
+
+resetBoard();
+}, 1000);
+}
+
+// Сброс состояния доски
+function resetBoard() {
+[firstCard, secondCard, lockBoard] = [null, null, false];
+}
+
+// Показать модальное окно с результатами
+function showResultModal() {
+// Создаем модальное окно
+const modal = document.createElement('div');
+modal.className = 'result-modal';
+modal.style.display = 'flex';
+
+modal.innerHTML = `
+<div class="result-modal-content">
+    <h3>Поздравляем!</h3>
+    <p>Вы нашли все пары за <strong>${moves}</strong> ходов и <strong>${gameTimer}</strong> секунд!</p>
+    <p>Хотите сохранить результат в турнирную таблицу?</p>
+    <div class="result-modal-buttons">
+        <button class="result-modal-btn save" id="save-to-leaderboard">Сохранить результат</button>
+        <button class="result-modal-btn play-again" id="play-again">Играть снова</button>
+        <button class="result-modal-btn close" id="close-modal">Закрыть</button>
+    </div>
+</div>
+`;
+
+document.body.appendChild(modal);
+
+// Обработчики кнопок модального окна
+document.getElementById('save-to-leaderboard').addEventListener('click', function() {
+modal.remove();
+// Показываем форму для ввода имени
+leaderboardContainer.style.display = 'block';
+saveResultForm.style.display = 'block';
+playerNameInput.focus();
+});
+
+document.getElementById('play-again').addEventListener('click', function() {
+modal.remove();
+resetGameState();
+initGame();
+saveResultForm.style.display = 'none';
+});
+
+document.getElementById('close-modal').addEventListener('click', function() {
+modal.remove();
+});
+
+// Закрытие по клику вне окна
+modal.addEventListener('click', function(e) {
+if (e.target === modal) {
+    modal.remove();
+}
 });
 }
+
+// Сохранение результата в турнирную таблицу
+function saveResult(name, moves, time) {
+// Получаем текущие результаты
+let leaderboard = getLeaderboard();
+
+// Добавляем новый результат
+const newResult = {
+name: name,
+moves: moves,
+time: time,
+date: new Date().toISOString()
+};
+
+leaderboard.push(newResult);
+
+// Сортируем по количеству ходов и времени
+leaderboard.sort((a, b) => {
+if (a.moves !== b.moves) {
+    return a.moves - b.moves; // Меньше ходов - лучше
+}
+return a.time - b.time; // Если ходы равны - меньше время
+});
+
+// Оставляем только топ-10 результатов
+leaderboard = leaderboard.slice(0, 10);
+
+// Сохраняем в localStorage
+localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(leaderboard));
+
+// Обновляем отображение таблицы
+loadLeaderboard();
+
+// Показываем подтверждение
+alert(`Результат ${name} сохранен в турнирную таблицу!`);
+}
+
+// Загрузка турнирной таблицы
+function loadLeaderboard() {
+const leaderboard = getLeaderboard();
+const leaderboardElement = document.getElementById('leaderboard');
+
+if (leaderboard.length === 0) {
+leaderboardElement.innerHTML = '<p style="text-align: center; color: #666;">Пока нет результатов. Будьте первым!</p>';
+leaderboardContainer.style.display = 'block';
+return;
+}
+
+let tableHTML = `
+<table class="leaderboard-table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Имя</th>
+            <th>Ходы</th>
+            <th>Время</th>
+        </tr>
+    </thead>
+    <tbody>
+`;
+
+leaderboard.forEach((result, index) => {
+tableHTML += `
+    <tr>
+        <td class="player-rank">${index + 1}</td>
+        <td class="player-name">${result.name}</td>
+        <td class="player-moves">${result.moves}</td>
+        <td class="player-time">${result.time} сек</td>
+    </tr>
+`;
+});
+
+tableHTML += `</tbody></table>`;
+leaderboardElement.innerHTML = tableHTML;
+leaderboardContainer.style.display = 'block';
+}
+
+// Получение турнирной таблицы из localStorage
+function getLeaderboard() {
+try {
+const stored = localStorage.getItem(LEADERBOARD_KEY);
+return stored ? JSON.parse(stored) : [];
+} catch (e) {
+console.error('Ошибка загрузки турнирной таблицы:', e);
+return [];
+}
+}
+
+// Адаптация игры для мобильных устройств
+function adjustGameForMobile() {
+const grid = document.getElementById('memory-grid');
+if (!grid) return;
+
+const width = window.innerWidth;
+const cards = document.querySelectorAll('.memory-card');
+
+// Настраиваем количество колонок в зависимости от ширины экрана
+if (width <= 380) {
+grid.style.maxWidth = '300px';
+grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
+grid.style.gridTemplateRows = 'repeat(6, 1fr)';
+} else if (width <= 480) {
+grid.style.maxWidth = '350px';
+grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
+grid.style.gridTemplateRows = 'repeat(6, 1fr)';
+} else if (width <= 576) {
+grid.style.maxWidth = '400px';
+grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
+grid.style.gridTemplateRows = 'repeat(6, 1fr)';
+} else if (width <= 768) {
+grid.style.maxWidth = '500px';
+grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
+grid.style.gridTemplateRows = 'repeat(6, 1fr)';
+} else {
+// Десктоп - 6x5
+grid.style.maxWidth = '650px';
+grid.style.gridTemplateColumns = 'repeat(6, 1fr)';
+grid.style.gridTemplateRows = 'repeat(5, 1fr)';
+}
+
+// Устанавливаем фиксированный размер для карточек
+cards.forEach(card => {
+if (width <= 768) {
+    // На мобильных - адаптивный размер
+    card.style.width = '100%';
+    card.style.height = '100%';
+    card.style.minWidth = '48px';
+    card.style.minHeight = '48px';
+} else {
+    // На десктопе - фиксированный размер 87.862px
+    card.style.width = '87.862px';
+    card.style.height = '87.862px';
+}
+});
+}
+
+// Вызываем при изменении размера окна
+window.addEventListener('resize', adjustGameForMobile);
+
+// Загружаем турнирную таблицу при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+loadLeaderboard();
+});
