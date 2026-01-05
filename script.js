@@ -27,7 +27,7 @@ function updateCountdown() {
     const diff = weddingDate - now;
     
     if (diff <= 0) {
-        document.getElementById('countdown').innerHTML = '<div class="countdown-over">Мы женились! ❤️</div>';
+        document.getElementById('countdown').innerHTML = '<div class="countdown-over">Время отмечать! 🎉</div>';
         if (countdownInterval) clearInterval(countdownInterval);
         return;
     }
@@ -51,6 +51,8 @@ function updateCountdown() {
 // ========== ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ==========
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded');
+    
     // 1. Запускаем обратный отсчет
     updateCountdown();
     countdownInterval = setInterval(updateCountdown, 1000);
@@ -62,107 +64,118 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         loadLeaderboard();
     }, 500);
+    
+    // 4. Добавляем обработчик ресайза
+    window.addEventListener('resize', adjustGameForMobile);
 });
 
 // ========== ИНИЦИАЛИЗАЦИЯ ИГРЫ MEMORY ==========
 
 function initMemoryGame() {
-    // Получаем элементы
+    console.log('Initializing memory game...');
+    
     const toggleGameBtn = document.getElementById('toggle-game-btn');
     const restartGameBtn = document.getElementById('restart-game');
     const saveResultBtn = document.getElementById('save-result-btn');
     const playerNameInput = document.getElementById('player-name');
     
-    // Проверяем, что элементы существуют
-    if (!toggleGameBtn || !restartGameBtn || !saveResultBtn || !playerNameInput) {
-        console.log('Элементы игры не найдены, возможно игра скрыта');
+    if (!toggleGameBtn) {
+        console.error('toggleGameBtn not found');
         return;
     }
     
+    console.log('Game elements found');
+    
     // Обработчик кнопки "Сыграть в Memory"
     toggleGameBtn.addEventListener('click', function() {
+        console.log('Toggle button clicked');
         const gameContainer = document.getElementById('game-container');
-        const isHidden = gameContainer.style.display === 'none' || gameContainer.style.display === '';
+        const isHidden = !gameContainer || gameContainer.style.display === 'none' || gameContainer.style.display === '';
         
         if (isHidden) {
             // Показываем игру
-            gameContainer.style.display = 'block';
-            gameStarted = true;
-            
-            // Инициализируем игру, если она еще не инициализирована
-            if (document.getElementById('memory-grid').children.length === 0) {
-                initGame();
-            } else {
-                adjustGameForMobile();
+            if (gameContainer) {
+                gameContainer.style.display = 'block';
+                gameStarted = true;
+                
+                // Инициализируем игру если нужно
+                const grid = document.getElementById('memory-grid');
+                if (grid && grid.children.length === 0) {
+                    initGame();
+                } else {
+                    adjustGameForMobile();
+                }
+                
+                // Меняем текст кнопки
+                toggleGameBtn.textContent = 'Скрыть игру';
+                
+                // Прокрутка
+                setTimeout(() => {
+                    if (gameContainer) gameContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
             }
-            
-            // Загружаем турнирную таблицу
-            loadLeaderboard();
-            
-            // Меняем текст кнопки
-            toggleGameBtn.textContent = 'Скрыть игру';
-            
-            // Плавная прокрутка к игре
-            setTimeout(() => {
-                gameContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 100);
         } else {
             // Скрываем игру
-            gameContainer.style.display = 'none';
-            gameStarted = false;
-            
-            // Останавливаем таймер только если он был запущен
-            if (timerRunning) {
-                clearInterval(gameInterval);
-                timerRunning = false;
+            if (gameContainer) {
+                gameContainer.style.display = 'none';
+                gameStarted = false;
+                
+                if (timerRunning) {
+                    clearInterval(gameInterval);
+                    timerRunning = false;
+                }
+                
+                gameActive = false;
+                toggleGameBtn.textContent = 'Сыграть в Memory';
             }
-            
-            // Сбрасываем флаг активности игры
-            gameActive = false;
-            
-            // Меняем текст кнопки
-            toggleGameBtn.textContent = 'Сыграть в Memory';
         }
     });
     
-    // Обработчик кнопки "Начать заново"
-    restartGameBtn.addEventListener('click', function() {
-        resetGameState();
-        initGame();
-        document.getElementById('save-result-form').style.display = 'none';
-        playerNameInput.value = '';
-    });
+    // Кнопка "Начать заново"
+    if (restartGameBtn) {
+        restartGameBtn.addEventListener('click', function() {
+            resetGameState();
+            initGame();
+            const saveResultForm = document.getElementById('save-result-form');
+            if (saveResultForm) saveResultForm.style.display = 'none';
+            if (playerNameInput) playerNameInput.value = '';
+        });
+    }
     
     // Кнопка сохранения результата
-    saveResultBtn.addEventListener('click', function() {
-        const playerName = playerNameInput.value.trim();
-        
-        if (!playerName) {
-            alert('Пожалуйста, введите ваше имя!');
-            return;
-        }
-        
-        if (playerName.length > 20) {
-            alert('Имя не должно превышать 20 символов!');
-            return;
-        }
-        
-        saveResult(playerName, moves, gameTimer);
-        playerNameInput.value = '';
-        document.getElementById('save-result-form').style.display = 'none';
-    });
+    if (saveResultBtn && playerNameInput) {
+        saveResultBtn.addEventListener('click', function() {
+            const playerName = playerNameInput.value.trim();
+            
+            if (!playerName) {
+                alert('Пожалуйста, введите ваше имя!');
+                return;
+            }
+            
+            if (playerName.length > 20) {
+                alert('Имя не должно превышать 20 символов!');
+                return;
+            }
+            
+            saveResult(playerName, moves, gameTimer);
+            playerNameInput.value = '';
+            const saveResultForm = document.getElementById('save-result-form');
+            if (saveResultForm) saveResultForm.style.display = 'none';
+        });
+    }
 }
 
 // ========== ФУНКЦИИ ИГРЫ MEMORY ==========
 
 // Функция инициализации игры
 function initGame() {
+    console.log('Initializing game grid...');
     const grid = document.getElementById('memory-grid');
     if (!grid) return;
     
     grid.innerHTML = '';
     
-    const symbols = ['💍', '💐', '🥂', '🔥', '🏠', '👰', '🤵', '❤️', '🎉', '🎶', '🍖', '🌲', '👞', '🍰', '🕊️'];
+    const symbols = ['💍', '💐', '🥂', '🔥', '🏠', '👰', '🤵', '❤️', '🎉', '🎶', '🍖', '🌲', '🎈', '🍰', '🕊️'];
     const gameSymbols = [...symbols, ...symbols];
     
     const shuffledSymbols = [...gameSymbols].sort(() => Math.random() - 0.5);
@@ -182,6 +195,7 @@ function initGame() {
 
 // Функция сброса состояния игры
 function resetGameState() {
+    console.log('Resetting game state...');
     if (timerRunning) {
         clearInterval(gameInterval);
         timerRunning = false;
@@ -195,19 +209,25 @@ function resetGameState() {
     lockBoard = false;
     gameActive = false;
     
-    document.getElementById('moves').textContent = '0';
-    document.getElementById('game-timer').textContent = '0';
-    document.getElementById('pairs').textContent = '0';
+    const movesEl = document.getElementById('moves');
+    const timerEl = document.getElementById('game-timer');
+    const pairsEl = document.getElementById('pairs');
+    
+    if (movesEl) movesEl.textContent = '0';
+    if (timerEl) timerEl.textContent = '0';
+    if (pairsEl) pairsEl.textContent = '0';
 }
 
 // Запуск таймера
 function startTimer() {
     if (!timerRunning) {
+        console.log('Starting timer...');
         gameTimer = 0;
         timerRunning = true;
         gameInterval = setInterval(() => {
             gameTimer++;
-            document.getElementById('game-timer').textContent = gameTimer;
+            const timerEl = document.getElementById('game-timer');
+            if (timerEl) timerEl.textContent = gameTimer;
         }, 1000);
     }
 }
@@ -219,6 +239,7 @@ function flipCard() {
     if (this.classList.contains('matched')) return;
     
     if (!gameActive) {
+        console.log('First move, starting game...');
         gameActive = true;
         startTimer();
     }
@@ -233,7 +254,8 @@ function flipCard() {
     
     secondCard = this;
     moves++;
-    document.getElementById('moves').textContent = moves;
+    const movesEl = document.getElementById('moves');
+    if (movesEl) movesEl.textContent = moves;
     
     checkForMatch();
 }
@@ -245,9 +267,11 @@ function checkForMatch() {
     if (isMatch) {
         disableCards();
         pairsFound++;
-        document.getElementById('pairs').textContent = pairsFound;
+        const pairsEl = document.getElementById('pairs');
+        if (pairsEl) pairsEl.textContent = pairsFound;
         
         if (pairsFound === 15) {
+            console.log('Game completed!');
             if (timerRunning) {
                 clearInterval(gameInterval);
                 timerRunning = false;
@@ -293,6 +317,7 @@ function resetBoard() {
 
 // Показать модальное окно с результатами
 function showResultModal() {
+    console.log('Showing result modal');
     const modal = document.createElement('div');
     modal.className = 'result-modal';
     modal.style.display = 'flex';
@@ -314,16 +339,21 @@ function showResultModal() {
     
     document.getElementById('save-to-leaderboard').addEventListener('click', function() {
         modal.remove();
-        document.getElementById('leaderboard-container').style.display = 'block';
-        document.getElementById('save-result-form').style.display = 'block';
-        document.getElementById('player-name').focus();
+        const leaderboardContainer = document.getElementById('leaderboard-container');
+        const saveResultForm = document.getElementById('save-result-form');
+        const playerNameInput = document.getElementById('player-name');
+        
+        if (leaderboardContainer) leaderboardContainer.style.display = 'block';
+        if (saveResultForm) saveResultForm.style.display = 'block';
+        if (playerNameInput) playerNameInput.focus();
     });
     
     document.getElementById('play-again').addEventListener('click', function() {
         modal.remove();
         resetGameState();
         initGame();
-        document.getElementById('save-result-form').style.display = 'none';
+        const saveResultForm = document.getElementById('save-result-form');
+        if (saveResultForm) saveResultForm.style.display = 'none';
     });
     
     document.getElementById('close-modal').addEventListener('click', function() {
@@ -341,6 +371,7 @@ function showResultModal() {
 
 // Сохранение результата
 async function saveResult(name, moves, time) {
+    console.log('Saving result:', name, moves, time);
     try {
         const saveResultBtn = document.getElementById('save-result-btn');
         if (saveResultBtn) {
@@ -359,6 +390,7 @@ async function saveResult(name, moves, time) {
         });
         
         const result = await response.json();
+        console.log('Server response:', result);
         
         if (result.success) {
             // Сохраняем также локально
@@ -367,7 +399,8 @@ async function saveResult(name, moves, time) {
             showNotification(`🎉 Результат сохранен! Место в таблице: ${result.rank || 'топ-10'}`);
             
             setTimeout(() => {
-                document.getElementById('save-result-form').style.display = 'none';
+                const saveResultForm = document.getElementById('save-result-form');
+                if (saveResultForm) saveResultForm.style.display = 'none';
             }, 2000);
         } else {
             saveToLocalStorage(name, moves, time);
@@ -444,8 +477,12 @@ function showNotification(message) {
 // Загрузка турнирной таблицы
 async function loadLeaderboard() {
     const leaderboardElement = document.getElementById('leaderboard');
-    if (!leaderboardElement) return;
+    if (!leaderboardElement) {
+        console.log('leaderboard element not found');
+        return;
+    }
     
+    console.log('Loading leaderboard...');
     leaderboardElement.innerHTML = `
         <div class="loading">
             <div class="spinner"></div>
@@ -456,6 +493,7 @@ async function loadLeaderboard() {
     try {
         const response = await fetch(`${SCRIPT_URL}?action=getTopScores`);
         const cloudLeaderboard = await response.json();
+        console.log('Cloud leaderboard:', cloudLeaderboard);
         
         if (cloudLeaderboard && cloudLeaderboard.length > 0) {
             displayLeaderboard(cloudLeaderboard, 'cloud');
@@ -617,5 +655,37 @@ function adjustGameForMobile() {
     });
 }
 
-// Вызываем при изменении размера окна
-window.addEventListener('resize', adjustGameForMobile);
+// Добавим CSS для анимаций если нет
+if (!document.querySelector('#game-animations')) {
+    const style = document.createElement('style');
+    style.id = 'game-animations';
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #8B7355;
+        }
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(139, 115, 85, 0.3);
+            border-radius: 50%;
+            border-top-color: #8B7355;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 15px;
+        }
+    `;
+    document.head.appendChild(style);
+}
