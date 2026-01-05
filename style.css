@@ -1932,6 +1932,106 @@ footer .fas.fa-heart {
     }
 }
 
+/* Стили для уведомлений игры */
+.game-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #8B7355;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  animation: slideIn 0.3s ease;
+  font-family: inherit;
+  max-width: 300px;
+  word-break: break-word;
+}
+
+/* Анимации для уведомлений */
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(100%); opacity: 0; }
+}
+
+/* Индикатор загрузки */
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: #8B7355;
+}
+
+.spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(139, 115, 85, 0.3);
+  border-radius: 50%;
+  border-top-color: #8B7355;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Кнопка обновления */
+.no-results {
+  text-align: center;
+  padding: 40px 20px;
+  color: #8B7355;
+  background: rgba(139, 115, 85, 0.05);
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.no-results p {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+/* Добавьте стили для кнопки внутри .no-results */
+.no-results .refresh-btn {
+  margin-top: 15px;
+}
+
+/* Адаптивность */
+@media (max-width: 576px) {
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 8px 5px;
+    font-size: 13px;
+  }
+  
+  .player-name {
+    padding-left: 8px !important;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .game-notification {
+    left: 10px;
+    right: 10px;
+    top: 10px;
+    max-width: none;
+    text-align: center;
+  }
+}
+
 /* Pinterest-подобная галерея для дресс-кода - увеличенные с расстоянием между рядами */
 .pinterest-grid {
     display: grid;
