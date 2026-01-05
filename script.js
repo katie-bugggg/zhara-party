@@ -59,53 +59,131 @@ function updateCountdown() {
     }
 }
 
-// ========== ФОРМА ОТВЕТОВ (ДОБАВЛЕНА) ==========
+// ========== ФОРМА ОТВЕТОВ (ИСПРАВЛЕННАЯ ВЕРСИЯ) ==========
 
 function initResponseForm() {
     console.log('📝 Инициализация формы ответов...');
     
-    const guestsCountSelect = document.getElementById('guests_count');
-    const additionalGuestsContainer = document.getElementById('additional-guests-container');
-    
-    if (!guestsCountSelect || !additionalGuestsContainer) {
-        console.log('Элементы формы не найдены');
+    // Проверяем, есть ли форма на странице
+    const responseForm = document.getElementById('response-form');
+    if (!responseForm) {
+        console.log('Форма response-form не найдена на этой странице');
         return;
     }
     
-    // Обработчик изменения количества гостей
-    guestsCountSelect.addEventListener('change', function() {
-        const selectedValue = parseInt(this.value);
+    const guestsCountSelect = document.getElementById('guests_count');
+    const additionalGuestsContainer = document.getElementById('additional-guests-container');
+    
+    if (!guestsCountSelect) {
+        console.error('❌ Элемент guests_count не найден!');
+        return;
+    }
+    
+    if (!additionalGuestsContainer) {
+        console.error('❌ Элемент additional-guests-container не найден!');
+        return;
+    }
+    
+    console.log('✅ Элементы формы найдены:', {
+        guestsCountSelect: !!guestsCountSelect,
+        additionalGuestsContainer: !!additionalGuestsContainer
+    });
+    
+    // Функция для создания поля гостя
+    function createGuestField(guestNumber) {
+        const guestField = document.createElement('div');
+        guestField.className = 'form-group';
+        guestField.innerHTML = `
+            <label for="guest_${guestNumber}">Имя гостя ${guestNumber}:</label>
+            <input type="text" 
+                   id="guest_${guestNumber}" 
+                   name="guest_${guestNumber}" 
+                   class="guest-name-input"
+                   placeholder="Введите имя гостя"
+                   required>
+        `;
+        return guestField;
+    }
+    
+    // Функция для обновления полей гостей
+    function updateGuestFields() {
+        const selectedValue = parseInt(guestsCountSelect.value);
+        console.log('Количество гостей выбрано:', selectedValue);
         
         // Очищаем предыдущие поля
         additionalGuestsContainer.innerHTML = '';
         
         // Если выбрано больше 1 гостя, показываем поля для имен
-        if (selectedValue > 1) {
+        if (selectedValue > 1 && selectedValue <= 10) { // Ограничим максимум 10 гостями
+            console.log('Создаем поля для', selectedValue - 1, 'дополнительных гостей');
+            
             for (let i = 2; i <= selectedValue; i++) {
-                const guestField = document.createElement('div');
-                guestField.className = 'form-group';
-                guestField.innerHTML = `
-                    <label for="guest_${i}">Имя гостя ${i}:</label>
-                    <input type="text" 
-                           id="guest_${i}" 
-                           name="guest_${i}" 
-                           placeholder="Введите имя гостя"
-                           required>
-                `;
+                const guestField = createGuestField(i);
                 additionalGuestsContainer.appendChild(guestField);
             }
             additionalGuestsContainer.style.display = 'block';
+            
+            // Плавное появление
+            setTimeout(() => {
+                additionalGuestsContainer.style.opacity = '1';
+                additionalGuestsContainer.style.transform = 'translateY(0)';
+            }, 10);
         } else {
+            console.log('Скрываем дополнительные поля');
             additionalGuestsContainer.style.display = 'none';
+            additionalGuestsContainer.style.opacity = '0';
+            additionalGuestsContainer.style.transform = 'translateY(-10px)';
         }
-    });
-    
-    // Инициализируем при загрузке (на случай, если уже выбрано значение)
-    if (guestsCountSelect.value > 1) {
-        guestsCountSelect.dispatchEvent(new Event('change'));
     }
     
-    console.log('✅ Форма ответов инициализирована');
+    // Добавляем обработчик изменения количества гостей
+    guestsCountSelect.addEventListener('change', updateGuestFields);
+    
+    // Инициализируем поля при загрузке (если уже выбрано значение)
+    if (guestsCountSelect.value && guestsCountSelect.value !== '1') {
+        console.log('Инициализируем поля с выбранным значением:', guestsCountSelect.value);
+        setTimeout(updateGuestFields, 100); // Небольшая задержка для гарантии
+    }
+    
+    // Добавляем стили для плавной анимации
+    if (!document.querySelector('#guest-fields-styles')) {
+        const style = document.createElement('style');
+        style.id = 'guest-fields-styles';
+        style.textContent = `
+            #additional-guests-container {
+                transition: all 0.3s ease;
+                opacity: 0;
+                transform: translateY(-10px);
+                margin-top: 15px;
+                padding-top: 15px;
+                border-top: 1px dashed #e0d6c9;
+            }
+            #additional-guests-container .form-group {
+                margin-bottom: 15px;
+                animation: fadeIn 0.3s ease;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(-5px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .guest-name-input {
+                width: 100%;
+                padding: 10px 15px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                font-size: 16px;
+                transition: border-color 0.3s;
+            }
+            .guest-name-input:focus {
+                border-color: #8B7355;
+                outline: none;
+                box-shadow: 0 0 0 2px rgba(139, 115, 85, 0.1);
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    console.log('✅ Форма ответов инициализирована!');
 }
 
 // ========== ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ (ИСПРАВЛЕННАЯ) ==========
@@ -117,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateCountdown();
     countdownInterval = setInterval(updateCountdown, 1000);
     
-    // 2. Инициализируем форму ответов
+    // 2. Инициализируем форму ответов (ДОБАВЬТЕ ЭТУ СТРОКУ!)
     initResponseForm();
     
     // 3. Инициализируем игру Memory
