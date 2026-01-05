@@ -130,7 +130,7 @@ submitBtn.disabled = true;
 
 try {
 // Отправляем данные на Google Apps Script
-const response = await fetch('https://script.google.com/macros/s/AKfycbxQDR4UsaEklGfo0aUFbGaHFzmqTl5RKjJxJ3Ipd4e__lipkxCoH4Y7tAVu5zTCgmoO/exec', {
+const response = await fetch('https://script.google.com/macros/s/AKfycbxgMEbBrT_Yc5_5Fan6Y0Qiwf0iVE3Fr-dwNIrlCC2lWCWui0YLxx24C3PJL8ZSxNDY/exec', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
@@ -275,6 +275,8 @@ setInterval(updateCountdown, 1000);
 window.addEventListener('load', updateCountdown);
 });
 
+
+// ИГРА
 // Находим элементы
 const toggleGameBtn = document.getElementById('toggle-game-btn');
 const gameContainer = document.getElementById('game-container');
@@ -577,79 +579,306 @@ if (e.target === modal) {
 }
 
 // Сохранение результата в турнирную таблицу
-function saveResult(name, moves, time) {
-// Получаем текущие результаты
-let leaderboard = getLeaderboard();
+function function saveResult(name, moves, time) {
+  // Получаем текущие результаты
+  let leaderboard = getLeaderboard();
 
-// Добавляем новый результат
-const newResult = {
-name: name,
-moves: moves,
-time: time,
-date: new Date().toISOString()
-};
+  // Добавляем новый результат
+  const newResult = {
+    name: name,
+    moves: moves,
+    time: time,
+    date: new Date().toISOString()
+  };
 
-leaderboard.push(newResult);
+  leaderboard.push(newResult);
 
-// Сортируем по количеству ходов и времени
-leaderboard.sort((a, b) => {
-if (a.moves !== b.moves) {
-    return a.moves - b.moves; // Меньше ходов - лучше
+  // Сортируем по количеству ходов и времени
+  leaderboard.sort((a, b) => {
+    if (a.moves !== b.moves) {
+      return a.moves - b.moves; // Меньше ходов - лучше
+    }
+    return a.time - b.time; // Если ходы равны - меньше время
+  });
+
+  // Оставляем только топ-10 результатов
+  leaderboard = leaderboard.slice(0, 10);
+
+  // Сохраняем в localStorage
+  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(leaderboard));
+
+  // Обновляем отображение таблицы
+  loadLeaderboard();
+
+  // Показываем подтверждение
+  alert(`Результат ${name} сохранен в турнирную таблицу!`);
 }
-return a.time - b.time; // Если ходы равны - меньше время
-});
+Замените её на новую версию:
 
-// Оставляем только топ-10 результатов
-leaderboard = leaderboard.slice(0, 10);
+javascript
+// URL вашего Google Apps Script (вставьте свой после развертывания)
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxgMEbBrT_Yc5_5Fan6Y0Qiwf0iVE3Fr-dwNIrlCC2lWCWui0YLxx24C3PJL8ZSxNDY/exec';
 
-// Сохраняем в localStorage
-localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(leaderboard));
-
-// Обновляем отображение таблицы
-loadLeaderboard();
-
-// Показываем подтверждение
-alert(`Результат ${name} сохранен в турнирную таблицу!`);
+// Сохранение результата в турнирную таблицу
+async function saveResult(name, moves, time) {
+  try {
+    // Отключаем кнопку для предотвращения повторных нажатий
+    saveResultBtn.disabled = true;
+    saveResultBtn.textContent = 'Сохраняем...';
+    
+    // Отправляем результат на сервер
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'saveMemoryScore',
+        data: { name: name, moves: moves, time: time }
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Сохраняем также локально (как запасной вариант)
+      saveToLocalStorage(name, moves, time);
+      
+      // Обновляем таблицу лидеров
+      await loadLeaderboard();
+      
+      // Показываем сообщение об успехе
+      showNotification(`🎉 Результат сохранен! Место в таблице: ${result.rank || 'топ-10'}`);
+      
+      // Скрываем форму через 2 секунды
+      setTimeout(() => {
+        saveResultForm.style.display = 'none';
+      }, 2000);
+    } else {
+      // Если ошибка сервера - сохраняем локально
+      saveToLocalStorage(name, moves, time);
+      loadLeaderboard();
+      showNotification('⚠️ Результат сохранен локально (ошибка сервера)');
+    }
+    
+  } catch (error) {
+    console.error('Ошибка сохранения:', error);
+    // При ошибке сети сохраняем локально
+    saveToLocalStorage(name, moves, time);
+    loadLeaderboard();
+    showNotification('⚠️ Результат сохранен локально (ошибка сети)');
+    
+  } finally {
+    // Восстанавливаем кнопку
+    saveResultBtn.disabled = false;
+    saveResultBtn.textContent = 'Сохранить результат';
+  }
 }
+
+// Сохранение в localStorage как запасной вариант
+function saveToLocalStorage(name, moves, time) {
+  let leaderboard = getLeaderboard();
+  
+  const newResult = {
+    name: name,
+    moves: moves,
+    time: time,
+    date: new Date().toISOString()
+  };
+  
+  leaderboard.push(newResult);
+  leaderboard.sort((a, b) => {
+    if (a.moves !== b.moves) return a.moves - b.moves;
+    return a.time - b.time;
+  });
+  
+  leaderboard = leaderboard.slice(0, 10);
+  localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(leaderboard));
+}
+
+// Красивое уведомление вместо alert
+function showNotification(message) {
+  // Удаляем старое уведомление если есть
+  const oldNotification = document.querySelector('.game-notification');
+  if (oldNotification) oldNotification.remove();
+  
+  const notification = document.createElement('div');
+  notification.className = 'game-notification';
+  notification.textContent = message;
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #8B7355;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease;
+    font-family: inherit;
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Автоудаление через 3 секунды
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+// Добавьте в CSS эти анимации
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  @keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+  }
+`;
+document.head.appendChild(style);
 
 // Загрузка турнирной таблицы
-function loadLeaderboard() {
-const leaderboard = getLeaderboard();
-const leaderboardElement = document.getElementById('leaderboard');
-
-if (leaderboard.length === 0) {
-leaderboardElement.innerHTML = '<p style="text-align: center; color: #666;">Пока нет результатов. Будьте первым!</p>';
-leaderboardContainer.style.display = 'block';
-return;
+async function loadLeaderboard() {
+  const leaderboardElement = document.getElementById('leaderboard');
+  
+  // Показываем индикатор загрузки
+  leaderboardElement.innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Загружаем таблицу лидеров...</p>
+    </div>
+  `;
+  
+  // Стили для индикатора загрузки
+  const loadingStyle = document.createElement('style');
+  loadingStyle.textContent = `
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #8B7355;
+    }
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(139, 115, 85, 0.3);
+      border-radius: 50%;
+      border-top-color: #8B7355;
+      animation: spin 1s ease-in-out infinite;
+      margin-bottom: 10px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  `;
+  document.head.appendChild(loadingStyle);
+  
+  try {
+    // Пробуем загрузить из Google Sheets
+    const response = await fetch(`${SCRIPT_URL}?action=getTopScores`);
+    const cloudLeaderboard = await response.json();
+    
+    if (cloudLeaderboard && cloudLeaderboard.length > 0) {
+      // Используем результаты из облака
+      displayLeaderboard(cloudLeaderboard, 'cloud');
+    } else {
+      // Если облако пустое - показываем локальные результаты
+      const localLeaderboard = getLeaderboard();
+      if (localLeaderboard.length > 0) {
+        displayLeaderboard(localLeaderboard, 'local');
+      } else {
+        showNoResults();
+      }
+    }
+    
+  } catch (error) {
+    console.error('Ошибка загрузки из облака:', error);
+    // При ошибке - показываем локальные результаты
+    const localLeaderboard = getLeaderboard();
+    if (localLeaderboard.length > 0) {
+      displayLeaderboard(localLeaderboard, 'local');
+    } else {
+      showNoResults();
+    }
+  }
+  
+  // Удаляем стили индикатора
+  setTimeout(() => loadingStyle.remove(), 1000);
 }
 
-let tableHTML = `
-<table class="leaderboard-table">
-    <thead>
+// Отображение таблицы лидеров
+function displayLeaderboard(leaderboard, source) {
+  const leaderboardElement = document.getElementById('leaderboard');
+  
+  let tableHTML = `
+    <div class="leaderboard-header">
+      <h3>Турнирная таблица</h3>
+      <small>${source === 'cloud' ? '🎯 Общая таблица' : '📱 Локальные результаты'}</small>
+    </div>
+    <table class="leaderboard-table">
+      <thead>
         <tr>
-            <th>#</th>
-            <th>Имя</th>
-            <th>Ходы</th>
-            <th>Время</th>
+          <th>#</th>
+          <th>Имя</th>
+          <th>Ходы</th>
+          <th>Время</th>
         </tr>
-    </thead>
-    <tbody>
-`;
-
-leaderboard.forEach((result, index) => {
-tableHTML += `
-    <tr>
-        <td class="player-rank">${index + 1}</td>
+      </thead>
+      <tbody>
+  `;
+  
+  leaderboard.forEach((result, index) => {
+    // Добавляем специальные классы для призовых мест
+    const rowClass = index < 3 ? `top-${index + 1}` : '';
+    
+    tableHTML += `
+      <tr class="${rowClass}">
+        <td class="player-rank">
+          ${index < 3 ? ['🥇', '🥈', '🥉'][index] : index + 1}
+        </td>
         <td class="player-name">${result.name}</td>
         <td class="player-moves">${result.moves}</td>
         <td class="player-time">${result.time} сек</td>
-    </tr>
-`;
-});
+      </tr>
+    `;
+  });
+  
+  tableHTML += `</tbody></table>`;
+  
+  // Кнопка обновления
+  tableHTML += `
+    <div class="leaderboard-footer">
+      <button id="refresh-leaderboard" class="refresh-btn">
+        🔄 Обновить таблицу
+      </button>
+    </div>
+  `;
+  
+  leaderboardElement.innerHTML = tableHTML;
+  leaderboardContainer.style.display = 'block';
+  
+  // Добавляем обработчик для кнопки обновления
+  document.getElementById('refresh-leaderboard').addEventListener('click', loadLeaderboard);
+}
 
-tableHTML += `</tbody></table>`;
-leaderboardElement.innerHTML = tableHTML;
-leaderboardContainer.style.display = 'block';
+// Показать сообщение об отсутствии результатов
+function showNoResults() {
+  const leaderboardElement = document.getElementById('leaderboard');
+  leaderboardElement.innerHTML = `
+    <div class="no-results">
+      <p>🎮 Пока нет результатов</p>
+      <p>Будьте первым!</p>
+      <button id="refresh-leaderboard" class="refresh-btn">
+        🔄 Обновить таблицу
+      </button>
+    </div>
+  `;
+  leaderboardContainer.style.display = 'block';
+  
+  document.getElementById('refresh-leaderboard').addEventListener('click', loadLeaderboard);
 }
 
 // Получение турнирной таблицы из localStorage
