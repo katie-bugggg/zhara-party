@@ -91,7 +91,7 @@ function initResponseForm() {
     }
     
     if (!guestForm) {
-        console.error('❌ Элемент #guest-form не найден!');
+        console.error('❌ Элемент 'form' не найден!');
         return;
     }
     
@@ -130,7 +130,6 @@ function initResponseForm() {
         console.log('Инициализируем поля с выбранным значением:', guestsCountSelect.value);
         updateGuestFields();
     }
-}
     
     // Обработчик формы (formspree):
 guestForm.addEventListener('submit', async function(e) {
@@ -266,6 +265,7 @@ function getSelectedOptions(selectId) {
         }
     }
     return selected;
+}
 }
 
 // ========== ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ (ИСПРАВЛЕННАЯ) ==========
