@@ -17,7 +17,7 @@ let gameActive = false;
 
 // Ключ для localStorage
 const LEADERBOARD_KEY = 'wedding_memory_leaderboard';
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpOsOQ61byEbQwzT9Gz8sw9nnEPtGxXzAZWl1JRVofc3VSwDWHbpZmBvXYnYg3I81j/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxQ3ILeDMXLKQScdGuW8wpzJfHrfqr55lTjXN9Q9qz78Tf64dnqtDaUTyH2FGDxsHIZ/exec';
 
 // ========== ОБРАТНЫЙ ОТСЧЕТ (ИСПРАВЛЕННЫЙ) ==========
 
@@ -161,7 +161,7 @@ function initResponseForm() {
             }
             
             // Отправляем данные на Google Apps Script
-            const response = await fetch('https://script.google.com/macros/s/AKfycbzpOsOQ61byEbQwzT9Gz8sw9nnEPtGxXzAZWl1JRVofc3VSwDWHbpZmBvXYnYg3I81j/exec', {
+            const response = await fetch('https://script.google.com/macros/s/AKfycbxQ3ILeDMXLKQScdGuW8wpzJfHrfqr55lTjXN9Q9qz78Tf64dnqtDaUTyH2FGDxsHIZ/exec', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -753,6 +753,7 @@ function showNotification(message) {
 }
 
 // Загрузка турнирной таблицы
+
 async function loadLeaderboard() {
     const leaderboardElement = document.getElementById('leaderboard');
     if (!leaderboardElement) {
@@ -760,7 +761,7 @@ async function loadLeaderboard() {
         return;
     }
     
-    console.log('📥 Загрузка таблицы лидеров...');
+    console.log('📥 Загрузка таблицы лидеров через JSONP...');
     leaderboardElement.innerHTML = `
         <div class="loading">
             <div class="spinner"></div>
@@ -768,39 +769,82 @@ async function loadLeaderboard() {
         </div>
     `;
     
-    try {
-        // Отправляем POST запрос вместо GET
-        const response = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'getTopScores' })
-        });
+    return new Promise((resolve) => {
+        // Создаем уникальное имя callback функции
+        const callbackName = 'leaderboardCallback_' + Date.now();
         
-        const cloudLeaderboard = await response.json();
-        console.log('☁️ Облачная таблица:', cloudLeaderboard);
+        // Создаем глобальную callback функцию
+        window[callbackName] = function(data) {
+            console.log('✅ JSONP данные получены:', data);
+            
+            // Убираем callback чтобы не засорять память
+            delete window[callbackName];
+            
+            // Удаляем script тег
+            if (script.parentNode) {
+                script.parentNode.removeChild(script);
+            }
+            
+            // Обрабатываем данные
+            if (Array.isArray(data) && data.length > 0) {
+                displayLeaderboard(data, true);
+            } else {
+                const localLeaderboard = getLeaderboard();
+                if (localLeaderboard.length > 0) {
+                    displayLeaderboard(localLeaderboard, false);
+                } else {
+                    showNoResults();
+                }
+            }
+            
+            resolve();
+        };
         
-        // ВАЖНО: проверяем что это массив и он не пустой
-        if (Array.isArray(cloudLeaderboard) && cloudLeaderboard.length > 0) {
-            displayLeaderboard(cloudLeaderboard, true);
-        } else {
-            // Используем локальные данные
+        // Создаем script тег для JSONP запроса
+        const script = document.createElement('script');
+        script.src = `${SCRIPT_URL}?action=getTopScores&callback=${callbackName}&t=${Date.now()}`;
+        
+        // Обработчик ошибок
+        script.onerror = function() {
+            console.log('❌ JSONP запрос не удался, используем локальные данные');
+            
+            // Очищаем
+            delete window[callbackName];
+            if (script.parentNode) {
+                script.parentNode.removeChild(script);
+            }
+            
             const localLeaderboard = getLeaderboard();
             if (localLeaderboard.length > 0) {
                 displayLeaderboard(localLeaderboard, false);
             } else {
                 showNoResults();
             }
-        }
+            
+            resolve();
+        };
         
-    } catch (error) {
-        console.error('❌ Ошибка загрузки из облака:', error);
-        const localLeaderboard = getLeaderboard();
-        if (localLeaderboard.length > 0) {
-            displayLeaderboard(localLeaderboard, false);
-        } else {
-            showNoResults();
-        }
-    }
+        // Добавляем script на страницу (запускает запрос)
+        document.head.appendChild(script);
+        
+        // Таймаут на случай если callback не придет
+        setTimeout(() => {
+            if (window[callbackName]) {
+                console.log('⏰ JSONP таймаут, используем локальные данные');
+                delete window[callbackName];
+                if (script.parentNode) {
+                    script.parentNode.removeChild(script);
+                }
+                
+                const localLeaderboard = getLeaderboard();
+                if (localLeaderboard.length > 0) {
+                    displayLeaderboard(localLeaderboard, false);
+                } else {
+                    showNoResults();
+                }
+            }
+        }, 5000); // 5 секунд таймаут
+    });
 }
 
 // Отображение таблицы лидеров
