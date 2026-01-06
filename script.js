@@ -17,7 +17,7 @@ let gameActive = false;
 
 // Ключ для localStorage
 const LEADERBOARD_KEY = 'wedding_memory_leaderboard';
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyBO-j0m78Q9Yve96-8IPBfLTBuHLw-mA3W47XZijRcVJ2s6QcOckjMeweWw7ak7aen/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpOsOQ61byEbQwzT9Gz8sw9nnEPtGxXzAZWl1JRVofc3VSwDWHbpZmBvXYnYg3I81j/exec';
 
 // ========== ОБРАТНЫЙ ОТСЧЕТ (ИСПРАВЛЕННЫЙ) ==========
 
@@ -161,7 +161,7 @@ function initResponseForm() {
             }
             
             // Отправляем данные на Google Apps Script
-            const response = await fetch('https://script.google.com/macros/s/AKfycbyBO-j0m78Q9Yve96-8IPBfLTBuHLw-mA3W47XZijRcVJ2s6QcOckjMeweWw7ak7aen/exec', {
+            const response = await fetch('https://script.google.com/macros/s/AKfycbzpOsOQ61byEbQwzT9Gz8sw9nnEPtGxXzAZWl1JRVofc3VSwDWHbpZmBvXYnYg3I81j/exec', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -752,7 +752,7 @@ function showNotification(message) {
     }, 3000);
 }
 
-// Загрузка турнирной таблицы (ИСПРАВЛЕН ДУБЛИРУЮЩИЙСЯ ЗАГОЛОВОК)
+// Загрузка турнирной таблицы
 async function loadLeaderboard() {
     const leaderboardElement = document.getElementById('leaderboard');
     if (!leaderboardElement) {
@@ -768,21 +768,26 @@ async function loadLeaderboard() {
         </div>
     `;
 
-    try {
-        const response = await fetch(`${SCRIPT_URL}?action=getTopScores`);
-        const cloudLeaderboard = await response.json();
+    const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'getTopScores' })
+        });
+    const cloudLeaderboard = await response.json();
         console.log('☁️ Облачная таблица:', cloudLeaderboard);
 
-        if (cloudLeaderboard && cloudLeaderboard.length > 0) {
-            displayLeaderboard(cloudLeaderboard, true);
-        } else {
-            const localLeaderboard = getLeaderboard();
-            if (localLeaderboard.length > 0) {
-                displayLeaderboard(localLeaderboard, false);
-            } else {
-                showNoResults();
-            }
-        }
+        // ВАЖНО: проверяем Array.isArray() и .length
+if (Array.isArray(cloudLeaderboard) && cloudLeaderboard.length > 0) {
+    displayLeaderboard(cloudLeaderboard, true);
+} else {
+    // Используем локальные данные
+    const localLeaderboard = getLeaderboard();
+    if (localLeaderboard.length > 0) {
+        displayLeaderboard(localLeaderboard, false);
+    } else {
+        showNoResults();
+    }
+}
 
     } catch (error) {
         console.error('❌ Ошибка загрузки из облака:', error);
@@ -795,7 +800,7 @@ async function loadLeaderboard() {
     }
 }
 
-// Отображение таблицы лидеров (ИСПРАВЛЕН ДУБЛИРУЮЩИЙСЯ ЗАГОЛОВОК)
+// Отображение таблицы лидеров
 function displayLeaderboard(leaderboard, isCloud) {
     const leaderboardElement = document.getElementById('leaderboard');
     if (!leaderboardElement) return;
