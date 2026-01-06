@@ -91,7 +91,7 @@ function initResponseForm() {
     }
     
     if (!guestForm) {
-        console.error('❌ Элемент 'form' не найден!');
+        console.error('❌ Элемент #form не найден!');
         return;
     }
     
