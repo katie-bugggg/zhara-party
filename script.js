@@ -395,11 +395,13 @@ function updateUniqueCode() {
         
         // Обновляем ссылку для редактирования
         if (editLinkDisplay) {
-    const decodedCode = decodeURIComponent(encodeURIComponent(code));
-    const editUrl = `https://zhara-party.ru/edit.html?code=${decodedCode}`;
-    
+    const encodedCode = encodeURIComponent(code);
+    const editUrl = `${window.location.origin}/edit.html?code=${encodedCode}`;
+
     editLinkDisplay.href = editUrl;
-    editLinkDisplay.textContent = editUrl; // Только URL, без префикса
+    
+    // Показываем ЧЕЛОВЕКО-ЧИТАЕМУЮ версию (декодированную)
+    editLinkDisplay.textContent = `${window.location.origin}/edit.html?code=${code}`;
 }
     }
 }
@@ -492,8 +494,7 @@ function initializeForm() {
     // Показываем сообщение только если форма БЫЛА отправлена
     if (formWasSubmitted && savedCode && previousFillMessage && editExistingLink) {
         // Формируем ссылку для редактирования
-        const baseUrl = window.location.origin + window.location.pathname;
-        const editUrl = baseUrl.replace('index.html', 'edit.html') + '?code=' + encodeURIComponent(savedCode);
+         const editUrl = `${window.location.origin}/edit.html?code=${encodeURIComponent(savedCode)}`;
         
         // Устанавливаем ссылку
         editExistingLink.href = editUrl;
@@ -521,6 +522,17 @@ function initializeForm() {
 // Основная инициализация
 function initResponseForm() {
     console.log('📝 Инициализация формы ответов...');
+    console.log('=== DEBUG FORM INIT ===');
+    console.log('1. Форма guest-form:', document.getElementById('guest-form'));
+    console.log('2. Поле name:', document.getElementById('name'));
+    console.log('3. Поле phone:', document.getElementById('phone'));
+    console.log('4. Форма на странице?', !!document.getElementById('guest-form'));
+    console.log('5. Текущий URL:', window.location.href);
+    
+    if (!document.getElementById('guest-form')) {
+        console.error('❌ Форма не найдена на странице!');
+        return;
+    }
     
     // Инициализируем переменные
     forWhoRadios = document.querySelectorAll('input[name="for-who"]');
@@ -774,17 +786,13 @@ function handleFormSuccess(formData) {
     // Устанавливаем флаг отправки
     localStorage.setItem('form_was_submitted', 'true');
 
-    // ПОЛУЧАЕМ guestForm ПЕРЕД ИСПОЛЬЗОВАНИЕМ
-    const guestForm = document.getElementById('guest-form');
+    // Используем глобальную переменную guestForm
     if (!guestForm) {
         console.error('❌ Форма не найдена!');
         return;
     }
     
-    // Получаем элемент сообщения
-    const finalMessage = document.getElementById('final-message');
-    const messageText = document.getElementById('message-text');
-    
+    // Используем глобальные переменные finalMessage и messageText
     if (finalMessage && messageText) {
         // Определяем текст в зависимости от наличия "Решу позже"
         if (formData.has_later) {
@@ -803,6 +811,21 @@ function handleFormSuccess(formData) {
         
         // Показываем сообщение
         finalMessage.style.display = 'block';
+
+        // Показываем контейнер с ссылкой для редактирования
+        if (editLinkContainer) {
+            editLinkContainer.style.display = 'block';
+            
+            // Обновляем ссылку для редактирования
+            const uniqueCodeInput = document.getElementById('unique-code');
+            if (uniqueCodeInput && editLinkDisplay) {
+                const code = uniqueCodeInput.value;
+                const editUrl = `${window.location.origin}/edit.html?code=${encodeURIComponent(code)}`;
+                editLinkDisplay.href = editUrl;
+                // Отображаем ЧЕЛОВЕКО-ЧИТАЕМУЮ версию
+    editLinkDisplay.textContent = `${window.location.origin}/edit.html?code=${code}`;
+            }
+        }
         
         // Прокручиваем к сообщению
         finalMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -894,8 +917,13 @@ document.addEventListener('DOMContentLoaded', function() {
     updateTimer();
     countdownInterval = setInterval(updateTimer, 1000);
     
-    // 2. Инициализируем форму ответов (ДОБАВЬТЕ ЭТУ СТРОКУ!)
-    initResponseForm();
+    // 2. Форма ответов - ТОЛЬКО ЕСЛИ ОНА ЕСТЬ НА СТРАНИЦЕ
+    if (document.getElementById('guest-form')) {
+        console.log('📋 Форма найдена, инициализируем...');
+        initResponseForm();
+    } else {
+        console.log('📭 Форма ответов отсутствует на этой странице');
+    }
     
     // 3. Инициализируем игру Memory
     setTimeout(initMemoryGame, 100);
