@@ -395,11 +395,13 @@ function updateUniqueCode() {
         
         // Обновляем ссылку для редактирования
         if (editLinkDisplay) {
-    const decodedCode = decodeURIComponent(encodeURIComponent(code));
-    const editUrl = `https://zhara-party.ru/edit.html?code=${decodedCode}`;
-    
+    const encodedCode = encodeURIComponent(code);
+    const editUrl = `${window.location.origin}/edit.html?code=${encodedCode}`;
+
     editLinkDisplay.href = editUrl;
-    editLinkDisplay.textContent = editUrl; // Только URL, без префикса
+    
+    // Показываем ЧЕЛОВЕКО-ЧИТАЕМУЮ версию (декодированную)
+    editLinkDisplay.textContent = `${window.location.origin}/edit.html?code=${code}`;
 }
     }
 }
@@ -492,8 +494,7 @@ function initializeForm() {
     // Показываем сообщение только если форма БЫЛА отправлена
     if (formWasSubmitted && savedCode && previousFillMessage && editExistingLink) {
         // Формируем ссылку для редактирования
-        const baseUrl = window.location.origin + window.location.pathname;
-        const editUrl = baseUrl.replace('index.html', 'edit.html') + '?code=' + encodeURIComponent(savedCode);
+         const editUrl = `${window.location.origin}/edit.html?code=${encodeURIComponent(savedCode)}`;
         
         // Устанавливаем ссылку
         editExistingLink.href = editUrl;
@@ -821,7 +822,8 @@ function handleFormSuccess(formData) {
                 const code = uniqueCodeInput.value;
                 const editUrl = `${window.location.origin}/edit.html?code=${encodeURIComponent(code)}`;
                 editLinkDisplay.href = editUrl;
-                editLinkDisplay.textContent = editUrl;
+                // Отображаем ЧЕЛОВЕКО-ЧИТАЕМУЮ версию
+    editLinkDisplay.textContent = `${window.location.origin}/edit.html?code=${code}`;
             }
         }
         
