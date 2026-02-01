@@ -521,6 +521,17 @@ function initializeForm() {
 // Основная инициализация
 function initResponseForm() {
     console.log('📝 Инициализация формы ответов...');
+    console.log('=== DEBUG FORM INIT ===');
+    console.log('1. Форма guest-form:', document.getElementById('guest-form'));
+    console.log('2. Поле name:', document.getElementById('name'));
+    console.log('3. Поле phone:', document.getElementById('phone'));
+    console.log('4. Форма на странице?', !!document.getElementById('guest-form'));
+    console.log('5. Текущий URL:', window.location.href);
+    
+    if (!document.getElementById('guest-form')) {
+        console.error('❌ Форма не найдена на странице!');
+        return;
+    }
     
     // Инициализируем переменные
     forWhoRadios = document.querySelectorAll('input[name="for-who"]');
@@ -894,8 +905,13 @@ document.addEventListener('DOMContentLoaded', function() {
     updateTimer();
     countdownInterval = setInterval(updateTimer, 1000);
     
-    // 2. Инициализируем форму ответов (ДОБАВЬТЕ ЭТУ СТРОКУ!)
-    initResponseForm();
+    // 2. Форма ответов - ТОЛЬКО ЕСЛИ ОНА ЕСТЬ НА СТРАНИЦЕ
+    if (document.getElementById('guest-form')) {
+        console.log('📋 Форма найдена, инициализируем...');
+        initResponseForm();
+    } else {
+        console.log('📭 Форма ответов отсутствует на этой странице');
+    }
     
     // 3. Инициализируем игру Memory
     setTimeout(initMemoryGame, 100);
