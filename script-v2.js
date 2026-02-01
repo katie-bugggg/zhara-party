@@ -785,17 +785,13 @@ function handleFormSuccess(formData) {
     // Устанавливаем флаг отправки
     localStorage.setItem('form_was_submitted', 'true');
 
-    // ПОЛУЧАЕМ guestForm ПЕРЕД ИСПОЛЬЗОВАНИЕМ
-    guestForm = document.getElementById('guest-form');
+    // Используем глобальную переменную guestForm
     if (!guestForm) {
         console.error('❌ Форма не найдена!');
         return;
     }
     
-    // Получаем элемент сообщения
-    const finalMessage = document.getElementById('final-message');
-    const messageText = document.getElementById('message-text');
-    
+    // Используем глобальные переменные finalMessage и messageText
     if (finalMessage && messageText) {
         // Определяем текст в зависимости от наличия "Решу позже"
         if (formData.has_later) {
@@ -814,6 +810,20 @@ function handleFormSuccess(formData) {
         
         // Показываем сообщение
         finalMessage.style.display = 'block';
+
+        // Показываем контейнер с ссылкой для редактирования
+        if (editLinkContainer) {
+            editLinkContainer.style.display = 'block';
+            
+            // Обновляем ссылку для редактирования
+            const uniqueCodeInput = document.getElementById('unique-code');
+            if (uniqueCodeInput && editLinkDisplay) {
+                const code = uniqueCodeInput.value;
+                const editUrl = `${window.location.origin}/edit.html?code=${encodeURIComponent(code)}`;
+                editLinkDisplay.href = editUrl;
+                editLinkDisplay.textContent = editUrl;
+            }
+        }
         
         // Прокручиваем к сообщению
         finalMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
