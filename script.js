@@ -672,6 +672,44 @@ function setupFormSubmitHandler() {
     });
 }
 
+// ========== СОХРАНЕНИЕ ДАННЫХ ДЛЯ РЕДАКТИРОВАНИЯ ==========
+
+// Сохраняем данные формы в localStorage
+function saveFormDataForEditing(formData) {
+    try {
+        const saveData = {
+            ...formData,
+            timestamp: Date.now(),
+            lastEdited: new Date().toLocaleString('ru-RU')
+        };
+        
+        const key = `wedding_form_data_${formData.unique_code}`;
+        localStorage.setItem(key, JSON.stringify(saveData));
+        
+        console.log('💾 Данные формы сохранены для редактирования:', key);
+        return true;
+    } catch (error) {
+        console.error('❌ Ошибка сохранения данных формы:', error);
+        return false;
+    }
+}
+
+// Получаем данные формы по коду
+function getFormDataByCode(code) {
+    try {
+        const key = `wedding_form_data_${code}`;
+        const data = localStorage.getItem(key);
+        
+        if (data) {
+            return JSON.parse(data);
+        }
+        return null;
+    } catch (error) {
+        console.error('❌ Ошибка получения данных формы:', error);
+        return null;
+    }
+}
+
 // Сбор данных формы
 function collectFormData() {
     const isFamily = document.querySelector('input[name="for-who"]:checked')?.value === 'family';
@@ -708,6 +746,15 @@ function collectFormData() {
         (drinksMultiple && Array.from(drinksMultiple.selectedOptions).some(opt => opt.value === 'Позже')) ||
         (carSelect && carSelect.value === 'Позже') ||
         (staySelect && staySelect.value === 'Позже');
+
+     const fullData = {
+        ...data,
+        timestamp: Date.now(),
+        date: new Date().toLocaleString('ru-RU')
+    };
+
+    // Сохраняем для возможного редактирования
+    saveFormDataForEditing(fullData);
     
     return data;
 }
@@ -783,8 +830,12 @@ ${formData.comments ? `• Комментарии: ${formData.comments}` : ''}
 
 // Обработка успешной отправки
 function handleFormSuccess(formData) {
+    console.log('✅ Форма успешно отправлена!', formData);
     // Устанавливаем флаг отправки
     localStorage.setItem('form_was_submitted', 'true');
+
+    // Сохраняем данные для возможного редактирования
+    saveFormDataForEditing(formData);
 
     // Используем глобальную переменную guestForm
     if (!guestForm) {
