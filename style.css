@@ -2397,3 +2397,130 @@ footer .fas.fa-heart {
     padding: 15px;
     border-top: 1px dashed #e0d6c9;
 }
+
+/* Стили для страницы редактирования */
+.edit-page-body {
+    background-color: #f8f9f7;
+    font-family: 'Montserrat', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+.edit-page-header {
+    background-color: #4a6c4a;
+    color: white;
+    padding: 15px 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.edit-page-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.edit-back-to-main {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.3s;
+}
+
+.edit-back-to-main:hover {
+    opacity: 0.8;
+}
+
+.edit-logo-small {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.edit-logo-small .edit-logo-text {
+    font-family: 'Great Vibes', cursive;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.edit-logo-small .edit-logo-branch svg {
+    width: 22px;
+    height: 22px;
+}
+
+.edit-logo-small .edit-logo-branch svg path {
+    fill: white;
+}
+
+.edit-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.edit-title {
+    text-align: center;
+    color: #4a6c4a;
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.edit-subtitle {
+    text-align: center;
+    color: #6c757d;
+    margin-bottom: 40px;
+    font-size: 1.1rem;
+}
+
+.edit-form-section {
+    background-color: white;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 40px;
+}
+
+/* Медиазапросы */
+@media (max-width: 768px) {
+    .edit-page-header .container {
+        padding: 0 15px;
+    }
+    
+    .edit-container {
+        padding: 0 15px;
+        margin: 20px auto;
+    }
+    
+    .edit-form-section {
+        padding: 25px 20px;
+    }
+    
+    .edit-title {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .edit-logo-small .edit-logo-text {
+        font-size: 1.3rem;
+    }
+    
+    .edit-back-to-main span {
+        display: none;
+    }
+    
+    .edit-back-to-main i {
+        font-size: 1.2rem;
+    }
+}
