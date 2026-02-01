@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактировать мои ответы | Катя и Андрей</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="shortcut icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="mask-icon" href="favicon.svg" color="#4a6c4a">
+    <meta name="theme-color" content="#4a6c4a">
+</head>
+<body class="edit-page-body">
+    <!-- Упрощенный заголовок -->
+    <header class="edit-page-header">
+        <div class="container">
+            <a href="index.html" class="edit-back-to-main">
+                <i class="fas fa-arrow-left"></i>
+                <span>На главную</span>
+            </a>
+            
+            <div class="edit-logo-small">
+                <div class="edit-logo-branch left-branch">
+                    <svg width="22" height="22" viewBox="0 0 26 26">
+                        <path fill="white" d="M21.184,2.555c0.688,1.202,0.125,1.662-0.436,1.977c-0.561,0.314-1.235,0.425-1.921-0.774C18.136,2.556,18.11,0,18.11,0S20.494,1.354,21.184,2.555z"/>
+                        <path fill="white" d="M24.16,6.004c-0.595,1.251-1.292,1.053-1.87,0.775c-0.581-0.283-1.056-0.773-0.467-2.02c0.595-1.254,2.674-2.736,2.674-2.736S24.751,4.754,24.16,6.004z"/>
+                        <path fill="white" d="M24.564,10.728c-0.897,1.056-1.521,0.685-2.006,0.267c-0.487-0.421-0.82-1.018,0.07-2.071c0.895-1.06,3.291-1.954,3.291-1.954S25.458,9.672,24.564,10.728z"/>
+                        <path fill="white" d="M20.565,9.336c1.229,0.716,0.978,1.396,0.65,1.949c-0.329,0.554-0.863,0.984-2.09,0.271c-1.232-0.715-2.59-2.946-2.59-2.946S19.333,8.622,20.565,9.336z"/>
+                        <path fill="white" d="M22.944,15.583c-1.202,0.688-1.662,0.128-1.979-0.431c-0.315-0.561-0.426-1.237,0.771-1.925c1.201-0.691,3.759-0.721,3.759-0.721S24.145,14.893,22.944,15.583z"/>
+                        <path fill="white" d="M19.835,13.057c0.88,1.121,0.393,1.659-0.114,2.052c-0.509,0.396-1.169,0.596-2.045-0.521c-0.878-1.121-1.312-3.695-1.312-3.695S18.956,11.94,19.835,13.057z"/>
+                        <path fill="white" d="M20.428,19.678c-1.366,0.24-1.607-0.443-1.716-1.076c-0.108-0.636,0.015-1.307,1.372-1.55c1.367-0.243,3.783,0.597,3.783,0.597S21.786,19.434,20.428,19.678z"/>
+                        <path fill="white" d="M18.198,16.285c0.601,1.292,0,1.704-0.584,1.971c-0.587,0.266-1.271,0.311-1.866-0.975c-0.601-1.293-0.432-3.9-0.432-3.9S17.602,14.995,18.198,16.285z"/>
+                        <path fill="white" d="M15.474,18.787c0.245,1.4-0.438,1.645-1.07,1.753c-0.636,0.103-1.312-0.028-1.555-1.424c-0.245-1.404,0.587-3.88,0.587-3.88S15.228,17.385,15.474,18.787z"/>
+                        <path fill="white" d="M16.792,22.827c-1.409-0.209-1.424-0.937-1.327-1.57c0.104-0.638,0.44-1.234,1.843-1.024c1.409,0.211,3.496,1.783,3.496,1.783S18.197,23.037,16.792,22.827z"/>
+                        <path fill="white" d="M12.398,21.047c0.102,1.42-0.603,1.594-1.244,1.637c-0.643,0.037-1.3-0.164-1.403-1.576c-0.098-1.422,0.983-3.799,0.983-3.799S12.299,19.63,12.398,21.047z"/>
+                        <path fill="white" d="M12.762,25.197c-1.344-0.477-1.221-1.192-1.001-1.796c0.221-0.606,0.668-1.127,2.005-0.654c1.342,0.477,3.088,2.419,3.088,2.419S14.1,25.67,12.762,25.197z"/>
+                        <path fill="white" d="M20.163,5.464c1.366,0.37,1.298,1.096,1.126,1.712c-0.174,0.621-0.579,1.175-1.939,0.806c-1.371-0.37-3.243-2.17-3.243-2.17S18.798,5.095,20.163,5.464z"/>
+                        <path fill="white" d="M10.638,23.44c0,0-6.453,2.538-10.479,1.634C-0.157,25.45,0.605,26,0.605,26S6.465,26.091,10.638,23.44z"/>
+                    </svg>
+                </div>
+                
+                <span class="edit-logo-text">К&А</span>
+                
+                <div class="edit-logo-branch right-branch">
+                    <svg width="22" height="22" viewBox="0 0 26 26">
+                        <path fill="white" d="M21.184,2.555c0.688,1.202,0.125,1.662-0.436,1.977c-0.561,0.314-1.235,0.425-1.921-0.774C18.136,2.556,18.11,0,18.11,0S20.494,1.354,21.184,2.555z"/>
+                        <path fill="white" d="M24.16,6.004c-0.595,1.251-1.292,1.053-1.87,0.775c-0.581-0.283-1.056-0.773-0.467-2.02c0.595-1.254,2.674-2.736,2.674-2.736S24.751,4.754,24.16,6.004z"/>
+                        <path fill="white" d="M24.564,10.728c-0.897,1.056-1.521,0.685-2.006,0.267c-0.487-0.421-0.82-1.018,0.07-2.071c0.895-1.06,3.291-1.954,3.291-1.954S25.458,9.672,24.564,10.728z"/>
+                        <path fill="white" d="M20.565,9.336c1.229,0.716,0.978,1.396,0.65,1.949c-0.329,0.554-0.863,0.984-2.09,0.271c-1.232-0.715-2.59-2.946-2.59-2.946S19.333,8.622,20.565,9.336z"/>
+                        <path fill="white" d="M22.944,15.583c-1.202,0.688-1.662,0.128-1.979-0.431c-0.315-0.561-0.426-1.237,0.771-1.925c1.201-0.691,3.759-0.721,3.759-0.721S24.145,14.893,22.944,15.583z"/>
+                        <path fill="white" d="M19.835,13.057c0.88,1.121,0.393,1.659-0.114,2.052c-0.509,0.396-1.169,0.596-2.045-0.521c-0.878-1.121-1.312-3.695-1.312-3.695S18.956,11.94,19.835,13.057z"/>
+                        <path fill="white" d="M20.428,19.678c-1.366,0.24-1.607-0.443-1.716-1.076c-0.108-0.636,0.015-1.307,1.372-1.55c1.367-0.243,3.783,0.597,3.783,0.597S21.786,19.434,20.428,19.678z"/>
+                        <path fill="white" d="M18.198,16.285c0.601,1.292,0,1.704-0.584,1.971c-0.587,0.266-1.271,0.311-1.866-0.975c-0.601-1.293-0.432-3.9-0.432-3.9S17.602,14.995,18.198,16.285z"/>
+                        <path fill="white" d="M15.474,18.787c0.245,1.4-0.438,1.645-1.07,1.753c-0.636,0.103-1.312-0.028-1.555-1.424c-0.245-1.404,0.587-3.88,0.587-3.88S15.228,17.385,15.474,18.787z"/>
+                        <path fill="white" d="M16.792,22.827c-1.409-0.209-1.424-0.937-1.327-1.57c0.104-0.638,0.44-1.234,1.843-1.024c1.409,0.211,3.496,1.783,3.496,1.783S18.197,23.037,16.792,22.827z"/>
+                        <path fill="white" d="M12.398,21.047c0.102,1.42-0.603,1.594-1.244,1.637c-0.643,0.037-1.3-0.164-1.403-1.576c-0.098-1.422,0.983-3.799,0.983-3.799S12.299,19.63,12.398,21.047z"/>
+                        <path fill="white" d="M12.762,25.197c-1.344-0.477-1.221-1.192-1.001-1.796c0.221-0.606,0.668-1.127,2.005-0.654c1.342,0.477,3.088,2.419,3.088,2.419S14.1,25.67,12.762,25.197z"/>
+                        <path fill="white" d="M20.163,5.464c1.366,0.37,1.298,1.096,1.126,1.712c-0.174,0.621-0.579,1.175-1.939,0.806c-1.371-0.37-3.243-2.17-3.243-2.17S18.798,5.095,20.163,5.464z"/>
+                        <path fill="white" d="M10.638,23.44c0,0-6.453,2.538-10.479,1.634C-0.157,25.45,0.605,26,0.605,26S6.465,26.091,10.638,23.44z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="edit-container">
+        <h1 class="edit-title">Редактировать мои ответы</h1>
+        <p class="edit-subtitle">Измените свои ответы и сохраните изменения</p>
+        
+        <!-- Сообщение о загрузке -->
+        <div id="loading-message" class="loading-message">
+            <div class="spinner"></div>
+            <p>Загружаем ваши данные...</p>
+        </div>
+        
+        <!-- Сообщение об ошибке -->
+        <div id="error-message" class="error-message" style="display: none;">
+            <h3><i class="fas fa-exclamation-triangle"></i> Ошибка</h3>
+            <p id="error-text">Не удалось загрузить ваши данные. Возможно, ссылка устарела или данные были удалены.</p>
+            <a href="index.html#rsvp" class="btn">Вернуться к форме на главной</a>
+        </div>
+        
+        <!-- Контейнер формы -->
+        <div id="edit-form-container" style="display: none;">
+            <section class="edit-form-section">
+                <div class="form-notice">
+                    <i class="fas fa-info-circle"></i>
+                    <p>Вы можете изменить свои ответы в этой форме и повторно отправить их нам. Все поля предзаполнены вашими предыдущими ответами.</p>
+                </div>
+                
+                <form id="guest-form">
+                    
+                    <!-- Радиокнопки "Заполняю за" -->
+                    <div class="form-group">
+                        <div class="radio-group">
+                            <label class="radio-label">Заполняю за:</label>
+                            <div class="radio-options">
+                                <label class="radio-option">
+                                    <input type="radio" name="for-who" value="myself" checked>
+                                    <span class="radio-custom"></span>
+                                    <span class="radio-text">Себя</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="for-who" value="family">
+                                    <span class="radio-custom"></span>
+                                    <span class="radio-text">Семью/компанию</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Предупреждение для семьи -->
+                    <div id="family-warning" class="form-warning accent" style="display: none;">
+                        <p>Убедитесь, что ваши спутники не заполняют форму отдельно — тогда мы точно всех учтём и ничего не перепутаем!</p>
+                    </div>
+
+                    <!-- Имя -->
+                    <div class="form-group">
+                        <label for="name" id="name-label">Вас зовут:*</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+
+                    <!-- Поле для имен гостей (для семьи) -->
+                    <div id="guests-names-container" style="display: none;">
+                        <div class="form-group">
+                            <label for="guests-names">Перечислите имена всех спутников*</label>
+                            <textarea id="guests-names" name="guests-names" placeholder="Гость 2, Гость 3, Гость 4..." rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Напитки -->
+                    <div class="form-group">
+                        <label id="drinks-label">Что будете пить?*</label>
+                        <div id="drinks-single-container">
+                            <select id="drinks-single" name="drinks-single" required aria-labelledby="drinks-label">
+                                <option value="" disabled selected>Выберите вариант</option>
+                                <option value="non-alc">🧃 Безалкогольное</option>
+                                <option value="wine">🍺🍷🍹 Лёгкое алкогольное</option>
+                                <option value="vodka">🥃 Крепкое алкогольное</option>
+                                <option value="everything">🥴 Всё, что нальют</option>
+                                <option value="Позже">Решу позже</option>
+                            </select>
+                        </div>
+                        <div id="drinks-multiple-container" style="display: none;">
+                            <select id="drinks-multiple" name="drinks-multiple" multiple size="4" aria-labelledby="drinks-label">
+                                <option value="non-alc">🧃 Безалкогольное</option>
+                                <option value="wine">🍺🍷🍹 Лёгкое алкогольное</option>
+                                <option value="vodka">🥃 Крепкое алкогольное</option>
+                                <option value="everything">🥴 Всё, что нальют</option>
+                                <option value="Позже">Решим позже</option>
+                            </select>
+                            <p class="form-hint">Для выбора нескольких вариантов удерживайте Ctrl (Windows) или Cmd (Mac)</p>
+                        </div>
+                    </div>
+
+                    <!-- Ночевка -->
+                    <div class="form-group">
+                        <label id="stay-label" for="stay">Остаётесь на второй день?*</label>
+                        <select id="stay" name="stay" required>
+                            <option value="" disabled selected>Выберите вариант</option>
+                            <option value="Остаюсь">Остаюсь</option>
+                            <option value="Ночую дома, но приеду на следующий день">Ночую дома, но приеду на следующий день</option>
+                            <option value="Приеду только на 1й день">Приеду только на первый день</option>
+                            <option value="Позже">Решу позже насчёт ночёвки</option>
+                            <option value="Не смогу посетить мероприятие">Не смогу посетить мероприятие</option>
+                            <option value="Свой вариант">Свой вариант (распишу в комментарии)</option>
+                        </select>
+                    </div>
+
+                    <!-- Авто -->
+                    <div class="form-group">
+                        <label id="car-label" for="car">Приедете на своём авто?</label>
+                        <select id="car" name="car">
+                            <option value="" selected>Выберите вариант</option>
+                            <option value="Да">Да</option>
+                            <option value="Нет">Нет</option>
+                            <option value="Позже">Решу позже</option>
+                            <option value="Свой вариант">Свой вариант (распишу в комментарии)</option>
+                        </select>
+                    </div>
+
+                    <!-- Трек -->
+                    <div class="form-group">
+                        <label for="track">Под какой трек вы точно подорвётесь на танцпол?</label>
+                        <input type="text" id="track" name="track" placeholder="Введите название песни и исполнителя">
+                    </div>
+
+                    <!-- Телефон -->
+                    <div class="form-group">
+                        <label for="phone">Контактный телефон:*</label>
+                        <input type="tel" id="phone" name="phone" pattern="(\+7[ \-]?\d{3}[ \-]?\d{3}[ \-]?\d{2}[ \-]?\d{2})|(\+49[ \-]?\d{3}[ \-]?\d{4,8})" placeholder="+7 999 123-45-67" required>
+                    </div>
+
+                    <!-- Комментарии -->
+                    <div class="form-group">
+                        <label for="comments">Комментарии или уточнения</label>
+                        <textarea id="comments" name="comments" placeholder="Любые уточнения по ночёвке, авто, напиткам или другие вопросы..." rows="3"></textarea>
+                    </div>
+
+                    <!-- Скрытое поле для уникального кода -->
+                    <input type="hidden" name="unique_code" id="unique-code">
+
+                    <!-- Кнопка отправки -->
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button type="submit" class="btn">Сохранить изменения</button>
+                        <a href="index.html" class="btn" style="background-color: #6c757d; margin-left: 10px;">Отмена</a>
+                    </div>
+                    
+                    <!-- Сообщение после сохранения -->
+                    <div id="final-message" style="display: none; margin-top: 30px;">
+                        <div id="edit-link-container" style="text-align: center; padding: 20px; background: rgba(40, 167, 69, 0.1); border-radius: 8px; border-left: 4px solid #28a745;">
+                            <p id="message-text" style="color: #155724; margin: 0 0 15px 0; font-weight: 500;">
+                                <!-- Текст будет меняться в зависимости от ответов -->
+                            </p>
+                            
+                            <div style="margin: 15px 0; font-size: 14px;">
+                                <div style="margin-bottom: 5px; color: #495057;">Ссылка для редактирования:</div>
+                                <a href="#" id="edit-link-display" target="_blank" 
+                                   style="color: #4a6fa5; font-weight: bold; text-decoration: underline; word-break: break-all;">
+                                    <!-- Ссылка будет вставлена сюда -->
+                                </a>
+                            </div>
+                            
+                            <p class="form-hint" style="margin-top: 15px; font-size: 12px; color: #6c757d;">
+                                Сохраните эту ссылку, чтобы иметь возможность изменить ответы позже
+                            </p>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
