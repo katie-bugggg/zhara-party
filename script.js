@@ -420,7 +420,7 @@ function updateCarOptions(isFamily) {
             <option value="Да, несколько">Приедем на двух авто</option>
             <option value="Нет">Нет</option>
             <option value="Позже">Решим позже</option>
-            <option value="Свой вариант">Свой вариант (распишем в комментарии)</option>
+            <option value="Свой вариант">Свой вариант (распишу в комментарии)</option>
         `;
     } else {
         // Для одного человека
