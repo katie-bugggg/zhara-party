@@ -2476,7 +2476,7 @@ footer .fas.fa-heart {
     font-weight: 400;
 }
 
-.edit-title:after {
+.edit-title::after {
     content: '';
     position: absolute;
     width: 80px;
@@ -2507,23 +2507,28 @@ footer .fas.fa-heart {
     background-color: #6c757d !important;
 }
 
+.btn-cancel:hover {
+    background-color: #5a6268 !important;
+    transform: translateY(-3px);
+}
+
 /* Контейнер для кнопок формы */
 .form-buttons {
     display: flex;
     gap: 15px;
     margin-top: 30px;
+    justify-content: center;
 }
 
-/* Чтобы обе кнопки были одинаковой ширины */
-.form-buttons .btn {
-    flex: 1;
-    text-align: center;
-}
-
-/* На мобильных - вертикально */
 @media (max-width: 576px) {
     .form-buttons {
         flex-direction: column;
+        align-items: center; /* Центрируем на мобильных */
+    }
+    
+    .form-buttons .btn {
+        width: auto; /* Не растягиваем на всю ширину */
+        min-width: 200px; /* Минимальная ширина для красоты */
     }
 }
 
