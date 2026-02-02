@@ -682,11 +682,11 @@ section {
 }
 
 /* Блок 2: Где празднуем */
-.location-info {
+.section-subtitle {
     text-align: center;
-    font-size: 1.2rem;
+    color: #6c757d;
     margin-bottom: 40px;
-    padding: 0 10px;
+    font-size: 1.1rem;
 }
 
 .gallery {
@@ -2485,13 +2485,6 @@ footer .fas.fa-heart {
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-}
-
-.edit-subtitle {
-    text-align: center;
-    color: #6c757d;
-    margin-bottom: 40px;
-    font-size: 1.1rem;
 }
 
 .edit-form-section {
