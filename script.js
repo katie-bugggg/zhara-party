@@ -856,13 +856,13 @@ function handleFormSuccess(formData) {
             finalMessage.style.background = 'rgba(40, 167, 69, 0.1)';
             finalMessage.style.borderLeftColor = '#28a745';
             messageText.style.color = '#155724';
-            messageText.innerHTML = '<strong>Не забудьте сообщить нам о ваших планах, когда решите!</strong>';
+            messageText.innerHTML = '<strong>✅ Спасибо! Ваши ответы сохранены.<br>Не забудьте сообщить нам о ваших планах, когда решите!</strong>';
         } else {
             // Если всё определили - стандартное сообщение
             finalMessage.style.background = 'rgba(40, 167, 69, 0.1)';
             finalMessage.style.borderLeftColor = '#28a745';
             messageText.style.color = '#155724';
-            messageText.innerHTML = '<strong>Если ваши планы поменяются, пожалуйста, сообщите нам!</strong>';
+            messageText.innerHTML = '<strong>✅ Спасибо! Ваши ответы сохранены.<br>Если ваши планы поменяются, пожалуйста, сообщите нам!</strong>';
         }
         
         // Показываем сообщение
@@ -882,16 +882,25 @@ function handleFormSuccess(formData) {
     editLinkDisplay.textContent = `${window.location.origin}/edit.html?code=${code}`;
             }
         }
+
+        // Блокируем всю форму
+    const formFields = guestForm.querySelectorAll('input, select, textarea');
+    formFields.forEach(field => {
+        field.disabled = true;
+        field.style.opacity = '0.7';
+        field.style.cursor = 'not-allowed';
+    });
+    
+    // Кнопка "Я буду!" остается disabled
+    const submitBtn = guestForm.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.background = '#6c757d';
+        submitBtn.style.cursor = 'not-allowed';
+    }
         
         // Прокручиваем к сообщению
         finalMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-    
-    // Восстанавливаем кнопку
-    const submitBtn = guestForm.querySelector('button[type="submit"]');
-    if (submitBtn) {
-        submitBtn.textContent = 'Я буду!';
-        submitBtn.disabled = false;
     }
 }
 
