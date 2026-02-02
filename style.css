@@ -2474,9 +2474,11 @@ footer .fas.fa-heart {
     font-size: 3.2rem;
     margin-bottom: 15px;
     font-weight: 400;
+    position: relative;
+    padding-bottom: 15px;
 }
 
-.edit-title::after {
+.edit-title:after {
     content: '';
     position: absolute;
     width: 80px;
