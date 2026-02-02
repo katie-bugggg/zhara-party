@@ -2491,6 +2491,31 @@ footer .fas.fa-heart {
     margin-bottom: 40px;
 }
 
+/* Класс для кнопки отмены */
+.btn-cancel {
+    background-color: #6c757d !important;
+}
+
+/* Контейнер для кнопок формы */
+.form-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+/* Чтобы обе кнопки были одинаковой ширины */
+.form-buttons .btn {
+    flex: 1;
+    text-align: center;
+}
+
+/* На мобильных - вертикально */
+@media (max-width: 576px) {
+    .form-buttons {
+        flex-direction: column;
+    }
+}
+
 /* Медиазапросы */
 @media (max-width: 768px) {
     .edit-page-header .container {
