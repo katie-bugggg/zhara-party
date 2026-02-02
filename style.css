@@ -2499,7 +2499,7 @@ footer .fas.fa-heart {
 
 /* Класс для кнопки отмены */
 .btn-cancel {
-    font: inherit;
+    font-size: 13.3333px !important;
     text-decoration: none !important;
     display: inline-block;
     background-color: #6c757d !important;
