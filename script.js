@@ -848,9 +848,9 @@ function handleFormSuccess(formData) {
         // Определяем текст в зависимости от наличия "Решу позже"
         if (formData.has_later) {
             // Если есть "Решу позже" - меняем стиль и текст
-            finalMessage.style.background = 'rgba(255, 193, 7, 0.1)';
-            finalMessage.style.borderLeftColor = '#ffc107';
-            messageText.style.color = '#856404';
+            finalMessage.style.background = 'rgba(40, 167, 69, 0.1)';
+            finalMessage.style.borderLeftColor = '#28a745';
+            messageText.style.color = '#155724';
             messageText.innerHTML = '<strong>Не забудьте сообщить нам о ваших планах, когда решите!</strong>';
         } else {
             // Если всё определили - стандартное сообщение
