@@ -47,85 +47,6 @@ function getFormDataByCode(code) {
     }
 }
 
-// ========== ФУНКЦИИ ОБНОВЛЕНИЯ ОПЦИЙ ==========
-
-// Функция обновления опций для авто
-function updateCarOptions(selectElement, isFamily) {
-    if (!selectElement) return;
-    
-    const currentValue = selectElement.value;
-    
-    if (isFamily) {
-        // Для семьи
-        selectElement.innerHTML = `
-            <option value="" selected>Выберите вариант</option>
-            <option value="Да">Да, все на одном авто</option>
-            <option value="Да, несколько">Приедем на двух авто</option>
-            <option value="Нет">Нет</option>
-            <option value="Позже">Решим позже</option>
-            <option value="Свой вариант">Свой вариант (распишем в комментарии)</option>
-        `;
-    } else {
-        // Для одного человека
-        selectElement.innerHTML = `
-            <option value="" selected>Выберите вариант</option>
-            <option value="Да">Да</option>
-            <option value="Нет">Нет</option>
-            <option value="Позже">Решу позже</option>
-            <option value="Свой вариант">Свой вариант (распишу в комментарии)</option>
-        `;
-    }
-    
-    // Восстанавливаем выбранное значение
-    if (currentValue) {
-        const optionToSelect = selectElement.querySelector(`option[value="${currentValue}"]`);
-        if (optionToSelect) {
-            optionToSelect.selected = true;
-        }
-    }
-}
-
-// Функция обновления опций для ночёвки
-function updateStayOptions(selectElement, isFamily) {
-    if (!selectElement) return;
-    
-    const currentValue = selectElement.value;
-    
-    if (isFamily) {
-        // Для семьи
-        const optionsToUpdate = {
-            'Остаюсь': 'Остаёмся',
-            'Ночую дома, но приеду на следующий день': 'Ночуем дома, но приедем на следующий день',
-            'Приеду только на 1й день': 'Приедем только на 1й день',
-            'Позже': 'Решим позже насчёт ночёвки',
-            'Не смогу посетить мероприятие': 'Не сможем посетить мероприятие',
-            'Свой вариант': 'Свой вариант (распишем в комментарии)'
-        };
-        
-        selectElement.querySelectorAll('option').forEach(option => {
-            if (optionsToUpdate[option.value]) {
-                option.textContent = optionsToUpdate[option.value];
-            }
-        });
-    } else {
-        // Для одного человека
-        const optionsToUpdate = {
-            'Остаюсь': 'Остаюсь',
-            'Ночую дома, но приеду на следующий день': 'Ночую дома, но приеду на следующий день',
-            'Приеду только на 1й день': 'Приеду только на первый день',
-            'Позже': 'Решу позже насчёт ночёвки',
-            'Не смогу посетить мероприятие': 'Не смогу посетить мероприятие',
-            'Свой вариант': 'Свой вариант (распишу в комментарии)'
-        };
-        
-        selectElement.querySelectorAll('option').forEach(option => {
-            if (optionsToUpdate[option.value]) {
-                option.textContent = optionsToUpdate[option.value];
-            }
-        });
-    }
-}
-
 // ========== РЕДАКТИРОВАНИЕ ФОРМЫ ==========
 
 // Глобальные переменные для edit.html
@@ -277,7 +198,7 @@ function updateEditCarOptions(isFamily) {
             <option value="Да, несколько">Приедем на двух авто</option>
             <option value="Нет">Нет</option>
             <option value="Позже">Решим позже</option>
-            <option value="Свой вариант">Свой вариант (распишем в комментарии)</option>
+            <option value="Свой вариант">Свой вариант (распишу в комментарии)</option>
         `;
     } else {
         editCarSelect.innerHTML = `
@@ -301,37 +222,44 @@ function updateEditStayOptions(isFamily) {
     if (!editStaySelect) return;
     
     const currentValue = editStaySelect.value;
+
+     // ДВА ПОЛНЫХ НАБОРА ТЕКСТОВ
+    const familyOptions = {
+        'Остаюсь': 'Остаёмся',
+        'Ночую дома, но приеду на следующий день': 'Ночуем дома, но приедем на следующий день',
+        'Приеду только на 1й день': 'Приедем только на 1й день',
+        'Позже': 'Решим позже насчёт ночёвки',
+        'Не смогу посетить мероприятие': 'Не сможем посетить мероприятие',
+        'Свой вариант': 'Свой вариант (распишу в комментарии)'
+    };
     
-    if (isFamily) {
-        const optionsToUpdate = {
-            'Остаюсь': 'Остаёмся',
-            'Ночую дома, но приеду на следующий день': 'Ночуем дома, но приедем на следующий день',
-            'Приеду только на 1й день': 'Поедем только на 1й день',
-            'Позже': 'Решим позже насчёт ночёвки',
-            'Не смогу посетить мероприятие': 'Не сможем посетить мероприятие',
-            'Свой вариант': 'Свой вариант (распишем в комментарии)'
-        };
+    const selfOptions = {
+        'Остаюсь': 'Остаюсь',
+        'Ночую дома, но приеду на следующий день': 'Ночую дома, но приеду на следующий день',
+        'Приеду только на 1й день': 'Приеду только на первый день',
+        'Позже': 'Решу позже насчёт ночёвки',
+        'Не смогу посетить мероприятие': 'Не смогу посетить мероприятие',
+        'Свой вариант': 'Свой вариант (распишу в комментарии)'
+    };
+
+    // ВЫБИРАЕМ НУЖНЫЙ НАБОР
+    const optionsToUse = isFamily ? familyOptions : selfOptions;
+    
+   // ОБНОВЛЯЕМ ВСЕ ОПЦИИ
+    editStaySelect.querySelectorAll('option').forEach(option => {
+        const originalValue = option.value;
         
-        editStaySelect.querySelectorAll('option').forEach(option => {
-            if (optionsToUpdate[option.value]) {
-                option.textContent = optionsToUpdate[option.value];
-            }
-        });
-    } else {
-        const optionsToUpdate = {
-            'Остаюсь': 'Остаюсь',
-            'Ночуем дома, но приедем на следующий день': 'Ночую дома, но приеду на следующий день',
-            'Поедем только на 1й день': 'Приеду только на первый день',
-            'Позже': 'Решу позже насчёт ночёвки',
-            'Не сможем посетить мероприятие': 'Не смогу посетить мероприятие',
-            'Свой вариант': 'Свой вариант (распишу в комментарии)'
-        };
+        if (optionsToUse[originalValue]) {
+            option.textContent = optionsToUse[originalValue];
+        }
+    });
         
-        editStaySelect.querySelectorAll('option').forEach(option => {
-            if (optionsToUpdate[option.value]) {
-                option.textContent = optionsToUpdate[option.value];
-            }
-        });
+// ВОССТАНАВЛИВАЕМ ВЫБРАННОЕ ЗНАЧЕНИЕ
+    if (currentValue) {
+        const optionToSelect = editStaySelect.querySelector(`option[value="${currentValue}"]`);
+        if (optionToSelect) {
+            optionToSelect.selected = true;
+        }
     }
 }
 
