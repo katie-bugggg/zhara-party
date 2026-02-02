@@ -2497,11 +2497,12 @@ footer .fas.fa-heart {
 
 /* Класс для кнопки отмены */
 .btn-cancel {
+    font-size: inherit;
     background-color: #6c757d !important;
 }
 
 .btn-cancel:hover {
-    background-color: #5a6268 !important;
+    background-color: #7a7f85 !important;
     transform: translateY(-3px);
 }
 
