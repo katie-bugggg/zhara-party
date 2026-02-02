@@ -375,7 +375,7 @@ window.addEventListener('beforeunload', function() {
 function generateUniqueCode() {
     if (!nameInput || !phoneInput) return 'guest_' + Date.now().toString(36);
     
-    const name = nameInput.value.trim().toLowerCase().replace(/\s+/g, '');
+    const name = nameInput.value.trim().toLowerCase().replace(/\s+/g, '').replace(/[^а-яa-z0-9]/g, '');
     const phone = phoneInput.value.replace(/\D/g, '');
     const last4Digits = phone.slice(-4);
     
