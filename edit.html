@@ -92,7 +92,7 @@
                     <p>Вы можете изменить свои ответы в этой форме и повторно отправить их нам. Все поля предзаполнены вашими предыдущими ответами.</p>
                 </div>
                 
-                <form id="guest-form">
+                <form id="edit-guest-form">
                     
                     <!-- Радиокнопки "Заполняю за" -->
                     <div class="form-group">
@@ -120,23 +120,23 @@
 
                     <!-- Имя -->
                     <div class="form-group">
-                        <label for="name" id="name-label">Вас зовут:*</label>
-                        <input type="text" id="name" name="name" required>
+                        <label for="edit-name" id="name-label">Вас зовут:*</label>
+                        <input type="text" id="edit-name" name="name" required>
                     </div>
 
                     <!-- Поле для имен гостей (для семьи) -->
-                    <div id="guests-names-container" style="display: none;">
+                    <div id="edit-guests-names-container" style="display: none;">
                         <div class="form-group">
-                            <label for="guests-names">Перечислите имена всех спутников*</label>
-                            <textarea id="guests-names" name="guests-names" placeholder="Гость 2, Гость 3, Гость 4..." rows="2"></textarea>
+                            <label for="edit-guests-names">Перечислите имена всех спутников*</label>
+                            <textarea id="edit-guests-names" name="guests-names" placeholder="Гость 2, Гость 3, Гость 4..." rows="2"></textarea>
                         </div>
                     </div>
 
                     <!-- Напитки -->
                     <div class="form-group">
                         <label id="drinks-label">Что будете пить?*</label>
-                        <div id="drinks-single-container">
-                            <select id="drinks-single" name="drinks-single" required aria-labelledby="drinks-label">
+                        <div id="edit-drinks-single-container">
+                            <select id="edit-drinks-single" name="drinks-single" required aria-labelledby="edit-drinks-label">
                                 <option value="" disabled selected>Выберите вариант</option>
                                 <option value="non-alc">🧃 Безалкогольное</option>
                                 <option value="wine">🍺🍷🍹 Лёгкое алкогольное</option>
@@ -145,8 +145,8 @@
                                 <option value="Позже">Решу позже</option>
                             </select>
                         </div>
-                        <div id="drinks-multiple-container" style="display: none;">
-                            <select id="drinks-multiple" name="drinks-multiple" multiple size="4" aria-labelledby="drinks-label">
+                        <div id="edit-drinks-multiple-container" style="display: none;">
+                            <select id="edit-drinks-multiple" name="drinks-multiple" multiple size="4" aria-labelledby="edit-drinks-label">
                                 <option value="non-alc">🧃 Безалкогольное</option>
                                 <option value="wine">🍺🍷🍹 Лёгкое алкогольное</option>
                                 <option value="vodka">🥃 Крепкое алкогольное</option>
@@ -159,8 +159,8 @@
 
                     <!-- Ночевка -->
                     <div class="form-group">
-                        <label id="stay-label" for="stay">Остаётесь на второй день?*</label>
-                        <select id="stay" name="stay" required>
+                        <label id="stay-label" for="edit-stay">Остаётесь на второй день?*</label>
+                        <select id="edit-stay" name="stay" required>
                             <option value="" disabled selected>Выберите вариант</option>
                             <option value="Остаюсь">Остаюсь</option>
                             <option value="Ночую дома, но приеду на следующий день">Ночую дома, но приеду на следующий день</option>
@@ -173,8 +173,8 @@
 
                     <!-- Авто -->
                     <div class="form-group">
-                        <label id="car-label" for="car">Приедете на своём авто?</label>
-                        <select id="car" name="car">
+                        <label id="car-label" for="edit-car">Приедете на своём авто?</label>
+                        <select id="edit-car" name="car">
                             <option value="" selected>Выберите вариант</option>
                             <option value="Да">Да</option>
                             <option value="Нет">Нет</option>
@@ -185,24 +185,24 @@
 
                     <!-- Трек -->
                     <div class="form-group">
-                        <label for="track">Под какой трек вы точно подорвётесь на танцпол?</label>
-                        <input type="text" id="track" name="track" placeholder="Введите название песни и исполнителя">
+                        <label for="edit-track">Под какой трек вы точно подорвётесь на танцпол?</label>
+                        <input type="text" id="edit-track" name="track" placeholder="Введите название песни и исполнителя">
                     </div>
 
                     <!-- Телефон -->
                     <div class="form-group">
-                        <label for="phone">Контактный телефон:*</label>
-                        <input type="tel" id="phone" name="phone" pattern="(\+7[ \-]?\d{3}[ \-]?\d{3}[ \-]?\d{2}[ \-]?\d{2})|(\+49[ \-]?\d{3}[ \-]?\d{4,8})" placeholder="+7 999 123-45-67" required>
+                        <label for="edit-phone">Контактный телефон:*</label>
+                        <input type="tel" id="edit-phone" name="phone" pattern="(\+7[ \-]?\d{3}[ \-]?\d{3}[ \-]?\d{2}[ \-]?\d{2})|(\+49[ \-]?\d{3}[ \-]?\d{4,8})" placeholder="+7 999 123-45-67" required>
                     </div>
 
                     <!-- Комментарии -->
                     <div class="form-group">
-                        <label for="comments">Комментарии или уточнения</label>
-                        <textarea id="comments" name="comments" placeholder="Любые уточнения по ночёвке, авто, напиткам или другие вопросы..." rows="3"></textarea>
+                        <label for="edit-comments">Комментарии или уточнения</label>
+                        <textarea id="edit-comments" name="comments" placeholder="Любые уточнения по ночёвке, авто, напиткам или другие вопросы..." rows="3"></textarea>
                     </div>
 
                     <!-- Скрытое поле для уникального кода -->
-                    <input type="hidden" name="unique_code" id="unique-code">
+                    <input type="hidden" name="unique_code" id="edit-unique-code">
 
                     <!-- Кнопка отправки -->
                     <div style="text-align: center; margin-top: 30px;">
