@@ -353,7 +353,7 @@ function initEditForm() {
 }
 
 // Отслеживаем изменения в форме (после её загрузки)
-const editForm = document.getElementById('edit-guest-form');
+editForm = document.getElementById('edit-guest-form');
 const saveButton = editForm.querySelector('button[type="submit"]');
 let isFormChanged = false;
 
@@ -425,7 +425,7 @@ formFields.forEach(field => {
 });
     
     // 3. Кнопка "Сохранить изменения" становится disabled
-    const saveButton = editForm.querySelector('button[type="submit"]');
+    saveButton = editForm.querySelector('button[type="submit"]');
     if (saveButton) {
         saveButton.disabled = true;
         saveButton.classList.add('submitted-button');
