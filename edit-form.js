@@ -352,6 +352,26 @@ function initEditForm() {
     console.log('✅ Форма редактирования инициализирована');
 }
 
+// Отслеживаем изменения в форме (после её загрузки)
+const editForm = document.getElementById('edit-guest-form');
+const saveButton = editForm.querySelector('button[type="submit"]');
+let isFormChanged = false;
+
+// Функция для разблокировки кнопки при изменениях
+function enableSaveButtonIfChanged() {
+    if (saveButton && saveButton.disabled && !isFormChanged) {
+        saveButton.disabled = false;
+        saveButton.style.background = ''; // Возвращаем оригинальный цвет
+        saveButton.style.cursor = '';
+        saveButton.textContent = 'Сохранить изменения';
+        isFormChanged = true;
+    }
+}
+
+// Слушаем изменения во всех полях формы
+editForm.addEventListener('input', enableSaveButtonIfChanged);
+editForm.addEventListener('change', enableSaveButtonIfChanged);
+
 // Настройка обработчика отправки
 function setupEditFormSubmitHandler() {
     if (!editForm) return;
@@ -383,9 +403,41 @@ function setupEditFormSubmitHandler() {
                 // Сохраняем обновленные данные
                 saveFormDataForEditing(formData);
                 
-                // Показываем успешное сообщение
-                document.getElementById('edit-form-container').style.display = 'none';
-                document.getElementById('edit-success-message').style.display = 'block';
+                 // 1. Показываем сообщение об успехе
+    const successMessage = document.getElementById('edit-success-message');
+    if (successMessage) {
+        successMessage.style.display = 'block';
+
+        // Прокручиваем к сообщению
+        setTimeout(() => {
+            successMessage.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'nearest' 
+            });
+        }, 300);
+    }
+    
+    // 2. Блокируем форму
+    const formFields = editForm.querySelectorAll('input, select, textarea');
+formFields.forEach(field => {
+    field.classList.add('submitted-field'); // Только CSS-класс
+    // НЕ делаем field.disabled = true;
+});
+    
+    // 3. Кнопка "Сохранить изменения" становится disabled
+    const saveButton = editForm.querySelector('button[type="submit"]');
+    if (saveButton) {
+        saveButton.disabled = true;
+        saveButton.classList.add('submitted-button');
+    }
+
+    // 4. Добавляем обработчик для разблокировки кнопки при изменениях
+editForm.addEventListener('input', function() {
+    if (saveButton && saveButton.disabled) {
+        saveButton.disabled = false;
+        saveButton.classList.remove('submitted-button');
+    }
+}); 
                 
             } else {
                 throw new Error('Ошибка отправки изменений');
