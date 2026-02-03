@@ -842,13 +842,12 @@ function handleFormSuccess(formData) {
     // Сохраняем данные для возможного редактирования
     saveFormDataForEditing(formData);
 
-    // Используем глобальную переменную guestForm
+    
     if (!guestForm) {
         console.error('❌ Форма не найдена!');
         return;
     }
     
-    // Используем глобальные переменные finalMessage и messageText
     if (finalMessage && messageText) {
         // Определяем текст в зависимости от наличия "Решу позже"
         if (formData.has_later) {
@@ -903,6 +902,7 @@ radioButtons.forEach(radio => {
     const submitBtn = guestForm.querySelector('button[type="submit"]');
     if (submitBtn) {
         submitBtn.disabled = true;
+        submitBtn.textContent = 'Я буду!';
         submitBtn.style.background = '#6c757d';
         submitBtn.style.cursor = 'not-allowed';
     }
