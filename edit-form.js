@@ -372,7 +372,7 @@ function initEditForm() {
 
 // Отслеживаем изменения в форме (после её загрузки)
 editForm = document.getElementById('edit-guest-form');
-const saveButton = editForm.querySelector('button[type="submit"]');
+let saveButton = editForm.querySelector('button[type="submit"]');
 let isFormChanged = false;
 
 // Функция для разблокировки кнопки при изменениях
