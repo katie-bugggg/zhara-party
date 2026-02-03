@@ -130,7 +130,25 @@ function populateFormWithData(formData) {
             editForWhoRadios.forEach(radio => {
                 if (radio.value === forWhoValue) {
                     radio.checked = true;
-                    radio.dispatchEvent(new Event('change'));
+                    // 1. СНАЧАЛА: Вручную применяем логику, которая зависит от isFamily
+            // Показываем/скрываем контейнеры гостей и напитков
+            if (editGuestsNamesContainer) {
+                editGuestsNamesContainer.style.display = isFamily ? 'block' : 'none';
+                if (editGuestsNamesTextarea) editGuestsNamesTextarea.required = isFamily;
+            }
+            if (editDrinksSingleContainer) editDrinksSingleContainer.style.display = isFamily ? 'none' : 'block';
+            if (editDrinksMultipleContainer) editDrinksMultipleContainer.style.display = isFamily ? 'block' : 'none';
+
+                // Обновляем обязательность полей напитков
+            if (editDrinksSingle) editDrinksSingle.required = !isFamily;
+            if (editDrinksMultiple) editDrinksMultiple.required = isFamily;
+            
+            // 2. Обновляем опции в селектах (это перезаписывает HTML, но пока без установки значения)
+            updateEditCarOptions(isFamily);
+            updateEditStayOptions(isFamily);
+            
+            // 3. И ТОЛЬКО ПОТОМ запускаем событие для синхронизации других обработчиков UI
+            radio.dispatchEvent(new Event('change'));
                 }
             });
         }
