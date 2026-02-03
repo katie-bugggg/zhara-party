@@ -435,13 +435,6 @@ function setupEditFormSubmitHandler() {
         }, 300);
     }
     
-    // 2. Блокируем форму
-    const formFields = editForm.querySelectorAll('input, select, textarea');
-formFields.forEach(field => {
-    field.classList.add('submitted-field'); // Только CSS-класс
-    // НЕ делаем field.disabled = true;
-});
-    
     // 3. Кнопка "Сохранить изменения" становится disabled
     saveButton = editForm.querySelector('button[type="submit"]');
     if (saveButton) {
