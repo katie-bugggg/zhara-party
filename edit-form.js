@@ -369,7 +369,7 @@ function initEditForm() {
 
     // Обработчик для разблокировки кнопки при изменениях
 editForm.addEventListener('input', function() {
-    if (saveButton && saveButton.disabled) {
+    if (saveButton && saveButton.disabled && saveButton.classList.contains('submitted-button')) {
         saveButton.disabled = false;
         saveButton.classList.remove('submitted-button');
     }
@@ -401,6 +401,9 @@ editForm.addEventListener('change', enableSaveButtonIfChanged);
 // Настройка обработчика отправки
 function setupEditFormSubmitHandler() {
     if (!editForm) return;
+
+    // 1. Сохраняем ссылку на кнопку при инициализации
+    saveButton = editForm.querySelector('button[type="submit"]');
     
     editForm.addEventListener('submit', async function(e) {
         e.preventDefault();
