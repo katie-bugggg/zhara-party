@@ -366,14 +366,6 @@ function initEditForm() {
     
     // Настраиваем отправку формы
     setupEditFormSubmitHandler();
-
-    // Обработчик для разблокировки кнопки при изменениях
-editForm.addEventListener('input', function() {
-    if (saveButton && saveButton.disabled && saveButton.classList.contains('submitted-button')) {
-        saveButton.disabled = false;
-        saveButton.classList.remove('submitted-button');
-    }
-});
     
     console.log('✅ Форма редактирования инициализирована');
 }
@@ -382,6 +374,14 @@ editForm.addEventListener('input', function() {
 editForm = document.getElementById('edit-guest-form');
 let saveButton = editForm.querySelector('button[type="submit"]');
 let isFormChanged = false;
+
+// Обработчик для разблокировки кнопки при изменениях (ОСТАВЬ ЗДЕСЬ)
+editForm.addEventListener('input', function() {
+    if (saveButton && saveButton.disabled && saveButton.classList.contains('submitted-button')) {
+        saveButton.disabled = false;
+        saveButton.classList.remove('submitted-button');
+    }
+});
 
 // Функция для разблокировки кнопки при изменениях
 function enableSaveButtonIfChanged() {
