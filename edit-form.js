@@ -377,7 +377,7 @@ let isFormChanged = false;
 
 // Функция для разблокировки кнопки при изменениях
 function enableSaveButtonIfChanged() {
-    if (saveButton && saveButton.disabled && !isFormChanged) {
+    if (saveButton && saveButton.disabled && !isFormChanged && saveButton.classList.contains('submitted-button')) {
         saveButton.disabled = false;
         saveButton.style.background = ''; // Возвращаем оригинальный цвет
         saveButton.style.cursor = '';
