@@ -441,15 +441,7 @@ function setupEditFormSubmitHandler() {
         saveButton.disabled = true;
         saveButton.classList.add('submitted-button');
         submitBtn.textContent = originalText;
-    }
-
-    // 4. Добавляем обработчик для разблокировки кнопки при изменениях
-editForm.addEventListener('input', function() {
-    if (saveButton && saveButton.disabled) {
-        saveButton.disabled = false;
-        saveButton.classList.remove('submitted-button');
-    }
-}); 
+    } 
                 
             } else {
                 throw new Error('Ошибка отправки изменений');
