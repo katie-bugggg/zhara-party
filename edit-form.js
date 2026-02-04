@@ -375,14 +375,6 @@ editForm = document.getElementById('edit-guest-form');
 let saveButton = editForm.querySelector('button[type="submit"]');
 let isFormChanged = false;
 
-// Обработчик для разблокировки кнопки при изменениях (ОСТАВЬ ЗДЕСЬ)
-editForm.addEventListener('input', function() {
-    if (saveButton && saveButton.disabled && saveButton.classList.contains('submitted-button')) {
-        saveButton.disabled = false;
-        saveButton.classList.remove('submitted-button');
-    }
-});
-
 // Функция для разблокировки кнопки при изменениях
 function enableSaveButtonIfChanged() {
     if (saveButton && saveButton.disabled && !isFormChanged) {
@@ -401,9 +393,6 @@ editForm.addEventListener('change', enableSaveButtonIfChanged);
 // Настройка обработчика отправки
 function setupEditFormSubmitHandler() {
     if (!editForm) return;
-
-    // 1. Сохраняем ссылку на кнопку при инициализации
-    saveButton = editForm.querySelector('button[type="submit"]');
     
     editForm.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -453,6 +442,14 @@ function setupEditFormSubmitHandler() {
         saveButton.classList.add('submitted-button');
         submitBtn.textContent = originalText;
     }
+
+    // 4. Добавляем обработчик для разблокировки кнопки при изменениях
+editForm.addEventListener('input', function() {
+    if (saveButton && saveButton.disabled) {
+        saveButton.disabled = false;
+        saveButton.classList.remove('submitted-button');
+    }
+}); 
                 
             } else {
                 throw new Error('Ошибка отправки изменений');
