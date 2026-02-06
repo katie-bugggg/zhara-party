@@ -377,12 +377,12 @@ let isFormChanged = false;
 
 // Функция для разблокировки кнопки при изменениях
 function enableSaveButtonIfChanged() {
-    if (saveButton && saveButton.disabled && !isFormChanged && saveButton.classList.contains('submitted-button')) {
+    if (saveButton && saveButton.disabled && isFormChanged) {
         saveButton.disabled = false;
         saveButton.style.background = ''; // Возвращаем оригинальный цвет
         saveButton.style.cursor = '';
         saveButton.textContent = 'Сохранить изменения';
-        isFormChanged = true;
+        isFormChanged = false; // Сбрасываем флаг обратно
     }
 }
 
@@ -441,6 +441,7 @@ function setupEditFormSubmitHandler() {
         saveButton.disabled = true;
         saveButton.classList.add('submitted-button');
         submitBtn.textContent = originalText;
+        isFormChanged = true; // <-- КЛЮЧЕВАЯ СТРОКА
     } 
                 
             } else {
