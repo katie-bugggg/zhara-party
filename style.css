@@ -2691,3 +2691,91 @@ footer .fas.fa-heart {
     animation: pulse-subtle 2s ease-in-out infinite;
 }
 */
+
+/* Стили для сообщения об ошибке на странице редактирования */
+.error-message {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: var(--border-radius);
+    padding: 25px 30px;
+    margin: 30px auto;
+    max-width: 600px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.error-message h3 {
+    color: #721c24;
+    margin-bottom: 15px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.error-message h3 i {
+    color: #dc3545;
+    font-size: 1.3rem;
+}
+
+.error-message p {
+    color: #721c24;
+    margin-bottom: 25px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.error-message .btn {
+    background-color: #6c757d;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Montserrat', sans-serif;
+    display: inline-block;
+    font-size: 16px;
+    min-height: 44px;
+}
+
+.error-message .btn:hover {
+    background-color: #7a7f85;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Адаптивность для сообщения об ошибке */
+@media (max-width: 768px) {
+    .error-message {
+        padding: 20px 15px;
+        margin: 20px 15px;
+    }
+    
+    .error-message h3 {
+        font-size: 1.3rem;
+    }
+    
+    .error-message p {
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+    }
+    
+    .error-message .btn {
+        padding: 12px 20px;
+        width: 100%;
+        max-width: 280px;
+    }
+}
+
+@media (max-width: 480px) {
+    .error-message h3 {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
