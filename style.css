@@ -2752,3 +2752,25 @@ footer .fas.fa-heart {
         padding: 20px 15px;
     }
 }
+
+/* Единые стили для заблокированных кнопок на всех страницах */
+.btn:disabled,
+.btn.disabled,
+button:disabled[type="submit"] {
+    background-color: #cccccc !important;
+    color: #666666 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+    opacity: 0.7 !important;
+    border: none !important;
+}
+
+/* Ховер для заблокированной кнопки - убираем все эффекты */
+.btn:disabled:hover,
+.btn.disabled:hover,
+button:disabled[type="submit"]:hover {
+    background-color: #cccccc !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
