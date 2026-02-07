@@ -2591,22 +2591,24 @@ footer .fas.fa-heart {
 
 /* ДОБАВЬТЕ ЭТИ СТИЛИ В КОНЕЦ ФАЙЛА style.css */
 
-/* Стили для кнопок формы редактирования */
+/* Исправьте эти стили в файле style.css */
+
+/* Контейнер для кнопок формы */
 .form-buttons {
     display: flex;
-    gap: 15px;
+    gap: 20px; /* Увеличиваем отступ между кнопками */
     margin-top: 30px;
-    justify-content: center;
+    justify-content: center; /* Центрируем на десктопе */
+    flex-wrap: wrap; /* Разрешаем перенос на мобильных */
 }
 
-/* Базовые стили для кнопок в форме редактирования */
+/* УДАЛИТЕ все эти стили и оставьте только: */
 .form-buttons .btn,
 .form-buttons .btn-cancel {
-    flex: 1; /* Равная ширина */
-    min-width: 0; /* Важно для flex-элементов */
-    padding: 14px 20px; /* Одинаковый padding */
+    /* Удаляем flex: 1 и min-width: 0 */
+    padding: 12px 30px; /* Оригинальный padding из основного .btn */
     text-align: center;
-    font-size: 16px;
+    font-size: 16px !important; /* Фиксированный одинаковый размер шрифта */
     line-height: 1.4;
     border-radius: 30px;
     border: none;
@@ -2615,37 +2617,33 @@ footer .fas.fa-heart {
     font-weight: 600;
     font-family: 'Montserrat', sans-serif;
     text-decoration: none;
-    box-sizing: border-box; /* Важно! */
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    min-height: 44px; /* Фиксированная минимальная высота */
 }
 
 /* Кнопка "Сохранить изменения" */
 .form-buttons .btn[type="submit"] {
     background-color: #4a6c4a;
     color: white;
+    font-size: 16px !important; /* Явно задаем размер шрифта */
 }
 
+/* Кнопка "Отмена" */
+.form-buttons .btn-cancel {
+    background-color: #6c757d;
+    color: white;
+    font-size: 16px !important; /* Явно задаем размер шрифта */
+}
+
+/* Ховер-эффекты */
 .form-buttons .btn[type="submit"]:hover:not(:disabled) {
     background-color: #5a7d5a;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-/* Кнопка "Сохранить изменения" в заблокированном состоянии */
-.form-buttons .btn[type="submit"]:disabled {
-    background-color: #cccccc !important;
-    color: #666666 !important;
-    cursor: not-allowed !important;
-    transform: none !important;
-    box-shadow: none !important;
-}
-
-/* Кнопка "Отмена" - ссылка с классом btn-cancel */
-.form-buttons .btn-cancel {
-    background-color: #6c757d;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .form-buttons .btn-cancel:hover {
@@ -2654,6 +2652,16 @@ footer .fas.fa-heart {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     color: white;
     text-decoration: none;
+}
+
+/* Заблокированная кнопка */
+.form-buttons .btn[type="submit"]:disabled {
+    background-color: #cccccc !important;
+    color: #666666 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+    opacity: 0.7;
 }
 
 /* Адаптивность */
@@ -2665,13 +2673,14 @@ footer .fas.fa-heart {
     
     .form-buttons .btn,
     .form-buttons .btn-cancel {
-        width: 100%;
-        min-height: 48px; /* Фиксированная высота на мобильных */
-        padding: 12px 15px;
+        width: 100%; /* На мобильных на всю ширину */
+        padding: 12px 20px;
+        min-height: 48px; /* Чуть больше на мобильных */
     }
 }
 
-/* Анимация изменения кнопки при изменениях в форме */
+/* УДАЛИТЕ ЭТУ АНИМАЦИЮ если не хотите пульсации: */
+/*
 @keyframes pulse-subtle {
     0% { transform: scale(1); }
     50% { transform: scale(1.02); }
@@ -2681,3 +2690,4 @@ footer .fas.fa-heart {
 .form-buttons .btn[type="submit"]:not(:disabled) {
     animation: pulse-subtle 2s ease-in-out infinite;
 }
+*/
