@@ -116,7 +116,11 @@ function populateFormWithData(formData) {
     
     try {
         // Основные поля
-        if (editNameInput) editNameInput.value = formData.name || '';
+        if (editNameInput) {
+            editNameInput.value = formData.name || '';
+        // === ДОБАВИТЬ ЭТУ СТРОЧКУ ===
+            editNameInput.readOnly = true; // Делаем поле только для чтения
+        }
         if (editPhoneInput) editPhoneInput.value = formData.phone || '';
         if (editTrackInput) editTrackInput.value = formData.track || '';
         if (editCommentsTextarea) editCommentsTextarea.value = formData.comments || '';
@@ -370,29 +374,97 @@ function initEditForm() {
     console.log('✅ Форма редактирования инициализирована');
 }
 
+// === УДАЛИТЕ ЭТОТ КОД ИЗ КОНЦА ФАЙЛА ===
 // Отслеживаем изменения в форме (после её загрузки)
-editForm = document.getElementById('edit-guest-form');
-let saveButton = editForm.querySelector('button[type="submit"]');
-let isFormChanged = false;
+// editForm = document.getElementById('edit-guest-form');
+// let saveButton = editForm.querySelector('button[type="submit"]');
+// let isFormChanged = false;
 
 // Функция для разблокировки кнопки при изменениях
-function enableSaveButtonIfChanged() {
-    if (saveButton && saveButton.disabled && saveButton.classList.contains('submitted-button')) {
-        saveButton.disabled = false;
-        saveButton.style.background = ''; // Возвращаем оригинальный цвет
-        saveButton.style.cursor = '';
-        saveButton.textContent = 'Сохранить изменения';
-        isFormChanged = false; // Сбрасываем флаг обратно
-    }
-}
+// function enableSaveButtonIfChanged() {
+   // if (saveButton && saveButton.disabled && saveButton.classList.contains('submitted-button')) {
+     //   saveButton.disabled = false;
+       // saveButton.style.background = ''; // Возвращаем оригинальный цвет
+        // saveButton.style.cursor = '';
+       // saveButton.textContent = 'Сохранить изменения';
+       // isFormChanged = false; // Сбрасываем флаг обратно
+    //}
+//}
 
 // Слушаем изменения во всех полях формы
-editForm.addEventListener('input', enableSaveButtonIfChanged);
-editForm.addEventListener('change', enableSaveButtonIfChanged);
+//editForm.addEventListener('input', enableSaveButtonIfChanged);
+//editForm.addEventListener('change', enableSaveButtonIfChanged);
+// === КОНЕЦ УДАЛЯЕМОГО КОДА ===
 
 // Настройка обработчика отправки
 function setupEditFormSubmitHandler() {
     if (!editForm) return;
+
+     // Инициализация переменных для отслеживания изменений
+    let saveButton = editForm.querySelector('button[type="submit"]');
+    let initialFormData = null;
+
+    // Сохраняем начальное состояние формы
+    function saveInitialFormState() {
+        if (editForm) {
+            initialFormData = new FormData(editForm);
+        }
+    }
+
+    // Проверяем, изменилась ли форма
+    function checkFormChanges() {
+        if (!initialFormData || !editForm) return false;
+        
+        const currentData = new FormData(editForm);
+        
+        for (let [key, value] of initialFormData.entries()) {
+            const currentValue = currentData.get(key);
+            if (String(value).trim() !== String(currentValue).trim()) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    // Обновляем состояние кнопки
+    function updateSaveButtonState() {
+        if (!saveButton) return;
+        
+        const hasChanges = checkFormChanges();
+        saveButton.disabled = !hasChanges;
+        
+        // Визуальная обратная связь
+        if (saveButton.disabled) {
+            saveButton.style.background = '#cccccc';
+            saveButton.style.cursor = 'not-allowed';
+            saveButton.textContent = 'Изменений нет';
+        } else {
+            saveButton.style.background = '';
+            saveButton.style.cursor = '';
+            saveButton.textContent = 'Сохранить изменения';
+        }
+    }
+
+    // Сохраняем начальное состояние после загрузки данных
+    setTimeout(() => {
+        saveInitialFormState();
+        updateSaveButtonState();
+    }, 300);
+
+    // Слушаем изменения во всех полях формы (кроме поля имени)
+    editForm.addEventListener('input', (e) => {
+        if (e.target !== editNameInput) { // Исключаем поле имени
+            updateSaveButtonState();
+        }
+    });
+    
+    editForm.addEventListener('change', (e) => {
+        if (e.target !== editNameInput) { // Исключаем поле имени
+            updateSaveButtonState();
+        }
+    });
+// === КОНЕЦ ДОБАВЛЕННОГО КОДА ===
     
     editForm.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -434,15 +506,21 @@ function setupEditFormSubmitHandler() {
             });
         }, 300);
     }
-    
+                
+// 2. ОБНОВЛЯЕМ начальное состояние для отслеживания изменений
+                saveInitialFormState();
+                
+                // 3. Обновляем состояние кнопки
+                updateSaveButtonState();
+                
     // 3. Кнопка "Сохранить изменения" становится disabled
-    saveButton = editForm.querySelector('button[type="submit"]');
-    if (saveButton) {
-        saveButton.disabled = true;
-        saveButton.classList.add('submitted-button');
-        submitBtn.textContent = originalText;
-        isFormChanged = true; // <-- КЛЮЧЕВАЯ СТРОКА
-    } 
+   // saveButton = editForm.querySelector('button[type="submit"]');
+   // if (saveButton) {
+     //   saveButton.disabled = true;
+       // saveButton.classList.add('submitted-button');
+       // submitBtn.textContent = originalText;
+       // isFormChanged = true; // <-- КЛЮЧЕВАЯ СТРОКА
+   // } 
                 
             } else {
                 throw new Error('Ошибка отправки изменений');
