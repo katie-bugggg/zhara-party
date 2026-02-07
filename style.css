@@ -2589,9 +2589,7 @@ footer .fas.fa-heart {
     }
 }
 
-/* ДОБАВЬТЕ ЭТИ СТИЛИ В КОНЕЦ ФАЙЛА style.css */
-
-/* Исправьте эти стили в файле style.css */
+/* ДОБАВЬТЕ ЭТИ СТИЛИ В КОНЕЦ ФАЙЛА */
 
 /* Контейнер для кнопок формы */
 .form-buttons {
@@ -2679,34 +2677,22 @@ footer .fas.fa-heart {
     }
 }
 
-/* УДАЛИТЕ ЭТУ АНИМАЦИЮ если не хотите пульсации: */
-/*
-@keyframes pulse-subtle {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
-}
-
-.form-buttons .btn[type="submit"]:not(:disabled) {
-    animation: pulse-subtle 2s ease-in-out infinite;
-}
-*/
-
 /* Стили для сообщения об ошибке на странице редактирования */
 .error-message {
-    background-color: #f8d7da;
-    border: 1px solid #f5c6cb;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid var(--light-green);
     border-radius: var(--border-radius);
-    padding: 25px 30px;
-    margin: 30px auto;
+    padding: 30px 40px;
+    margin: 40px auto;
     max-width: 600px;
     text-align: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow);
+    animation: fadeIn 0.5s ease;
 }
 
 .error-message h3 {
-    color: #721c24;
-    margin-bottom: 15px;
+    color: var(--primary-green);
+    margin-bottom: 20px;
     font-family: 'Montserrat', sans-serif;
     font-weight: 600;
     font-size: 1.5rem;
@@ -2717,19 +2703,21 @@ footer .fas.fa-heart {
 }
 
 .error-message h3 i {
-    color: #dc3545;
+    color: var(--accent-color);
     font-size: 1.3rem;
 }
 
 .error-message p {
-    color: #721c24;
-    margin-bottom: 25px;
+    color: var(--text);
+    margin-bottom: 30px;
     font-size: 1rem;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
+/* Кнопка использует существующие стили .btn */
 .error-message .btn {
-    background-color: #6c757d;
+    display: inline-block;
+    background-color: var(--primary-green);
     color: white;
     padding: 12px 30px;
     border-radius: 30px;
@@ -2739,43 +2727,28 @@ footer .fas.fa-heart {
     cursor: pointer;
     transition: all 0.3s;
     font-family: 'Montserrat', sans-serif;
-    display: inline-block;
-    font-size: 16px;
-    min-height: 44px;
+    box-shadow: var(--shadow);
 }
 
 .error-message .btn:hover {
-    background-color: #7a7f85;
+    background-color: var(--accent-green);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Адаптивность для сообщения об ошибке */
+/* Адаптивность */
 @media (max-width: 768px) {
     .error-message {
-        padding: 20px 15px;
-        margin: 20px 15px;
+        padding: 25px 20px;
+        margin: 30px 20px;
     }
     
     .error-message h3 {
         font-size: 1.3rem;
     }
-    
-    .error-message p {
-        font-size: 0.95rem;
-        margin-bottom: 20px;
-    }
-    
-    .error-message .btn {
-        padding: 12px 20px;
-        width: 100%;
-        max-width: 280px;
-    }
 }
 
 @media (max-width: 480px) {
-    .error-message h3 {
-        flex-direction: column;
-        gap: 8px;
+    .error-message {
+        padding: 20px 15px;
     }
 }
