@@ -370,31 +370,12 @@ function initEditForm() {
     
     // Настраиваем отправку формы
     setupEditFormSubmitHandler();
+
+     // ИНИЦИАЛИЗАЦИЯ ДИНАМИЧЕСКОЙ ВАЛИДАЦИИ
+    setupCustomOptionValidation();
     
     console.log('✅ Форма редактирования инициализирована');
 }
-
-// === УДАЛИТЕ ЭТОТ КОД ИЗ КОНЦА ФАЙЛА ===
-// Отслеживаем изменения в форме (после её загрузки)
-// editForm = document.getElementById('edit-guest-form');
-// let saveButton = editForm.querySelector('button[type="submit"]');
-// let isFormChanged = false;
-
-// Функция для разблокировки кнопки при изменениях
-// function enableSaveButtonIfChanged() {
-   // if (saveButton && saveButton.disabled && saveButton.classList.contains('submitted-button')) {
-     //   saveButton.disabled = false;
-       // saveButton.style.background = ''; // Возвращаем оригинальный цвет
-        // saveButton.style.cursor = '';
-       // saveButton.textContent = 'Сохранить изменения';
-       // isFormChanged = false; // Сбрасываем флаг обратно
-    //}
-//}
-
-// Слушаем изменения во всех полях формы
-//editForm.addEventListener('input', enableSaveButtonIfChanged);
-//editForm.addEventListener('change', enableSaveButtonIfChanged);
-// === КОНЕЦ УДАЛЯЕМОГО КОДА ===
 
 // Настройка обработчика отправки
 function setupEditFormSubmitHandler() {
@@ -464,7 +445,6 @@ function setupEditFormSubmitHandler() {
             updateSaveButtonState();
         }
     });
-// === КОНЕЦ ДОБАВЛЕННОГО КОДА ===
     
     editForm.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -511,16 +491,7 @@ function setupEditFormSubmitHandler() {
                 saveInitialFormState();
                 
                 // 3. Обновляем состояние кнопки
-                updateSaveButtonState();
-                
-    // 3. Кнопка "Сохранить изменения" становится disabled
-   // saveButton = editForm.querySelector('button[type="submit"]');
-   // if (saveButton) {
-     //   saveButton.disabled = true;
-       // saveButton.classList.add('submitted-button');
-       // submitBtn.textContent = originalText;
-       // isFormChanged = true; // <-- КЛЮЧЕВАЯ СТРОКА
-   // } 
+                updateSaveButtonState(); 
                 
             } else {
                 throw new Error('Ошибка отправки изменений');
@@ -581,16 +552,66 @@ function collectEditFormData() {
 // Валидация данных редактирования
 function validateEditFormData(data) {
     if (!data.name || !data.phone) return false;
-    
+
+    // Проверка телефона
     const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
     if (!phoneRegex.test(data.phone)) return false;
-    
+
+    // Если выбрана семья, проверяем имена гостей
     const isFamily = document.querySelector('input[name="for-who"]:checked')?.value === 'family';
     if (isFamily && (!data.guests_names || data.guests_names.trim().length < 2)) {
         return false;
     }
+
+    // Если выбран "Свой вариант" в любом поле, комментарии обязательны
+    const staySelect = document.getElementById('stay');
+    const carSelect = document.getElementById('car');
+    const commentsTextarea = document.getElementById('comments');
+    
+    const hasCustomOption = 
+        (staySelect && staySelect.value === 'Свой вариант') ||
+        (carSelect && carSelect.value === 'Свой вариант');
+    
+    if (hasCustomOption && (!commentsTextarea || !commentsTextarea.value.trim())) {
+        alert('Пожалуйста, распишите свой вариант в комментарии или выберите из предложенных');
+        return false;
+    }
     
     return true;
+}
+
+// Валидация на заполнение комментария, если выбран "свой вариант"
+function setupCustomOptionValidation() {
+    const staySelect = document.getElementById('stay');
+    const carSelect = document.getElementById('car');
+    const commentsTextarea = document.getElementById('comments');
+    
+    if (!commentsTextarea) return;
+    
+    function updateCommentsRequired() {
+        // Проверяем все select'ы на наличие "Свой вариант"
+        const hasCustomOption = 
+            (staySelect && staySelect.value === 'Свой вариант') ||
+            (carSelect && carSelect.value === 'Свой вариант');
+        
+        commentsTextarea.required = hasCustomOption;
+        
+        // Визуальный индикатор
+        if (hasCustomOption) {
+            commentsTextarea.placeholder = 'Обязательное поле при выборе "Свой вариант"';
+            commentsTextarea.classList.add('required-field');
+        } else {
+            commentsTextarea.placeholder = 'Любые уточнения по ночёвке, авто, напиткам или другие вопросы...';
+            commentsTextarea.classList.remove('required-field');
+        }
+    }
+    
+    // Навешиваем обработчики на все select'ы
+    if (staySelect) staySelect.addEventListener('change', updateCommentsRequired);
+    if (carSelect) carSelect.addEventListener('change', updateCommentsRequired);
+    
+    // Инициализация при загрузке
+    updateCommentsRequired();
 }
 
 // Отправка редактирования на Formspree
