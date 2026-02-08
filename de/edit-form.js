@@ -369,6 +369,9 @@ function initEditForm() {
     
     // Настраиваем отправку формы
     setupEditFormSubmitHandler();
+
+    // ИНИЦИАЛИЗАЦИЯ ДИНАМИЧЕСКОЙ ВАЛИДАЦИИ
+    setupCustomOptionValidation();
     
     console.log('✅ Форма редактирования инициализирована');
 }
@@ -441,7 +444,6 @@ function setupEditFormSubmitHandler() {
             updateSaveButtonState();
         }
     });
-// === КОНЕЦ ДОБАВЛЕННОГО КОДА ===
     
     editForm.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -549,16 +551,66 @@ function collectEditFormData() {
 // Валидация данных редактирования
 function validateEditFormData(data) {
     if (!data.name || !data.phone) return false;
-    
+
+    // Проверка телефона
     const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
     if (!phoneRegex.test(data.phone)) return false;
-    
+
+    // Если выбрана семья, проверяем имена гостей
     const isFamily = document.querySelector('input[name="for-who"]:checked')?.value === 'family';
     if (isFamily && (!data.guests_names || data.guests_names.trim().length < 2)) {
         return false;
     }
+
+    // Если выбран "Свой вариант" в любом поле, комментарии обязательны
+    const staySelect = document.getElementById('stay');
+    const carSelect = document.getElementById('car');
+    const commentsTextarea = document.getElementById('comments');
+    
+    const hasCustomOption = 
+        (staySelect && staySelect.value === 'Свой вариант') ||
+        (carSelect && carSelect.value === 'Свой вариант');
+    
+    if (hasCustomOption && (!commentsTextarea || !commentsTextarea.value.trim())) {
+        alert('Bitte eigenen Vorschlag in Kommentaren erläutern oder aus Vorgaben wählen');
+        return false;
+    }
     
     return true;
+}
+
+// Валидация на заполнение комментария, если выбран "свой вариант"
+function setupCustomOptionValidation() {
+    const staySelect = document.getElementById('stay');
+    const carSelect = document.getElementById('car');
+    const commentsTextarea = document.getElementById('comments');
+    
+    if (!commentsTextarea) return;
+    
+    function updateCommentsRequired() {
+        // Проверяем все select'ы на наличие "Свой вариант"
+        const hasCustomOption = 
+            (staySelect && staySelect.value === 'Свой вариант') ||
+            (carSelect && carSelect.value === 'Свой вариант');
+        
+        commentsTextarea.required = hasCustomOption;
+        
+        // Визуальный индикатор
+        if (hasCustomOption) {
+            commentsTextarea.placeholder = 'Pflichtfeld bei "Eigener Vorschlag"';
+            commentsTextarea.classList.add('required-field');
+        } else {
+            commentsTextarea.placeholder = 'Ergänzungen zur Übernachtung, Auto, Getränke oder andere Fragen...';
+            commentsTextarea.classList.remove('required-field');
+        }
+    }
+    
+    // Навешиваем обработчики на все select'ы
+    if (staySelect) staySelect.addEventListener('change', updateCommentsRequired);
+    if (carSelect) carSelect.addEventListener('change', updateCommentsRequired);
+    
+    // Инициализация при загрузке
+    updateCommentsRequired();
 }
 
 // Отправка редактирования на Formspree
