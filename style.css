@@ -1254,6 +1254,21 @@ select option:disabled {
     background-color: #f5f5f5;
 }
 
+/* Стили для подсказки мультиселекта */
+.multiselect-hint {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+/* Скрываем на мобильных */
+@media (max-width: 768px) {
+    .multiselect-hint {
+        display: none !important;
+    }
+}
+
 /* Блок 8: Как добраться с единой рамкой */
 .map-unified-container {
     background-color: transparent; /* Изменено с white на прозрачный */
