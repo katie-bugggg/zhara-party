@@ -71,7 +71,7 @@ async function loadLeaderboard() {
     }
 }
 
-// 3. Вспомогательные функции (добавьте если нет):
+// 3. Вспомогательные функции:
 
 // Форматирование времени (секунды → "мм:сс")
 function formatTime(seconds) {
@@ -138,6 +138,28 @@ document.addEventListener('DOMContentLoaded', function() {
 let guestForm = null;
 let guestsCountSelect = null;
 let additionalGuestsContainer = null;
+let forWhoRadios = null;
+let familyWarning = null;
+let guestsNamesContainer = null;
+let drinksSingleContainer = null;
+let drinksMultipleContainer = null;
+let drinksSingle = null;
+let drinksMultiple = null;
+let nameLabel = null;
+let drinksLabel = null;
+let stayLabel = null;
+let carLabel = null;
+let carSelect = null;
+let nameInput = null;
+let phoneInput = null;
+let staySelect = null;
+let guestsNamesTextarea = null;
+let editLinkContainer = null;
+let editLinkDisplay = null;
+let finalMessage = null;
+let messageText = null;
+let previousFillMessage = null;
+let editExistingLink = null;
 
 // Таймер обратного отсчета
 const TARGET_DATE = new Date('June 13, 2026 16:00:00 GMT+0200').getTime();
@@ -345,264 +367,557 @@ window.addEventListener('beforeunload', function() {
 
 
 
-// ========== ПОКАЗ СООБЩЕНИЙ ФОРМЫ ==========
-function showFormMessage(message, type = 'info') {
-    // Удаляем старое сообщение если есть
-    const existingMessage = document.querySelector('.form-message');
-    if (existingMessage) {
-        existingMessage.remove();
+// ========== ФОРМА ОТВЕТОВ ==========
+
+// ========== ОСНОВНЫЕ ФУНКЦИИ ФОРМЫ ==========
+
+// Генерация уникального кода
+function generateUniqueCode() {
+    if (!nameInput || !phoneInput) return 'guest_' + Date.now().toString(36);
+    
+    const name = nameInput.value.trim().toLowerCase().replace(/\s+/g, '').replace(/[^а-яa-z0-9]/g, '');
+    const phone = phoneInput.value.replace(/\D/g, '');
+    const last4Digits = phone.slice(-4);
+    
+    if (name && phone.length >= 4) {
+        return name + last4Digits;
     }
+    return 'guest_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
+}
+
+// Обновление кода
+function updateUniqueCode() {
+    const code = generateUniqueCode();
+    const uniqueCodeInput = document.getElementById('unique-code');
+    if (uniqueCodeInput) {
+        uniqueCodeInput.value = code;
+        localStorage.setItem('wedding_form_code', code);
+        
+        // Обновляем ссылку для редактирования
+        if (editLinkDisplay) {
+    const encodedCode = encodeURIComponent(code);
+    const editUrl = `${window.location.origin}/edit.html?code=${encodedCode}`;
+
+    editLinkDisplay.href = editUrl;
     
-    // Создаем новое сообщение
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `form-message ${type}`;
-    messageDiv.textContent = message;
-    
-    // Стили сообщения
-    messageDiv.style.cssText = `
-        margin: 20px 0;
-        padding: 15px;
-        border-radius: 8px;
-        text-align: center;
-        font-weight: 500;
-        font-size: 16px;
-        background-color: ${type === 'success' ? 'rgba(74, 108, 74, 0.1)' : 'rgba(255, 0, 0, 0.1)'};
-        color: ${type === 'success' ? '#4a6c4a' : '#d32f2f'};
-        border: 1px solid ${type === 'success' ? '#4a6c4a' : '#d32f2f'};
-    `;
-    
-    // Вставляем перед кнопкой отправки
-    const submitBtn = document.querySelector('#form button[type="submit"]');
-    if (submitBtn && submitBtn.parentNode) {
-        submitBtn.parentNode.insertBefore(messageDiv, submitBtn);
-    }
-    
-    // Автоматически скрываем успешные сообщения через 5 секунд
-    if (type === 'success') {
-        setTimeout(() => {
-            if (messageDiv.parentNode) {
-                messageDiv.style.transition = 'opacity 0.5s';
-                messageDiv.style.opacity = '0';
-                setTimeout(() => {
-                    if (messageDiv.parentNode) {
-                        messageDiv.remove();
-                    }
-                }, 500);
-            }
-        }, 5000);
+    // Показываем ЧЕЛОВЕКО-ЧИТАЕМУЮ версию (декодированную)
+    editLinkDisplay.textContent = `${window.location.origin}/edit.html?code=${code}`;
+}
     }
 }
 
-// ========== ФОРМА ОТВЕТОВ ==========
+// Функция обновления опций для авто
+function updateCarOptions(isFamily) {
+    if (!carSelect) return;
+    
+    const currentValue = carSelect.value;
+    
+    if (isFamily) {
+        // Для семьи
+        carSelect.innerHTML = `
+            <option value="" selected>Option wählen</option>
+            <option value="Да">Ja, alle in einem Auto</option>
+            <option value="Да, несколько">Ja, mit zwei Autos</option>
+            <option value="Нет">Nein</option>
+            <option value="Позже">Später entscheiden</option>
+            <option value="Свой вариант">Eigener Vorschlag (wird im Kommentar erläutert)</option>
+        `;
+    } else {
+        // Для одного человека
+        carSelect.innerHTML = `
+            <option value="" selected>Option wählen</option>
+            <option value="Да">Ja</option>
+            <option value="Нет">Nein</option>
+            <option value="Позже">Später entscheiden</option>
+            <option value="Свой вариант">Eigener Vorschlag (wird im Kommentar erläutert)</option>
+        `;
+    }
+    
+    // Восстанавливаем выбранное значение
+    if (currentValue) {
+        const optionToSelect = carSelect.querySelector(`option[value="${currentValue}"]`);
+        if (optionToSelect) {
+            optionToSelect.selected = true;
+        }
+    }
+}
 
-function initResponseForm() {
-    console.log('📝 Инициализация формы с правильными селекторами...');
+// Функция обновления опций для ночёвки
+function updateStayOptions(isFamily) {
+    if (!staySelect) return;
     
-    // 1. Находим элементы по их ID из HTML
-    guestsCountSelect = document.getElementById('guests-count');
-    additionalGuestsContainer = document.getElementById('additional-guests');
-    guestForm = document.getElementById('guest-form');
+    const currentValue = staySelect.value;
     
-    console.log('Найдены элементы:', {
-        guestsCountSelect: !!guestsCountSelect,
-        additionalGuestsContainer: !!additionalGuestsContainer,
-        guestForm: !!guestForm
+    // ДВА ПОЛНЫХ НАБОРА ТЕКСТОВ
+    const familyOptions = {
+        'Остаюсь': 'Wir bleiben',
+        'Ночую дома, но приеду на следующий день': 'Wir übernachten zu Hause, kommen aber am nächsten Tag',
+        'Приеду только на 1й день': 'Nur am ersten Tag dabei',
+        'Позже': 'Wir entscheiden später wegen der Übernachtung',
+        'Не смогу посетить мероприятие': 'Wir können nicht kommen',
+        'Свой вариант': 'Eigener Vorschlag (wird im Kommentar erläutert)'
+    };
+    
+    const selfOptions = {
+        'Остаюсь': 'Ich bleibe',
+        'Ночую дома, но приеду на следующий день': 'Übernachte zu Hause, komme aber am nächsten Tag',
+        'Приеду только на 1й день': 'Nur am ersten Tag dabei',
+        'Позже': 'Entscheide später wegen Übernachtung',
+        'Не смогу посетить мероприятие': 'Kann nicht teilnehmen',
+        'Свой вариант': 'Eigener Vorschlag (wird im Kommentar erläutert)'
+    };
+
+     // ВЫБИРАЕМ НУЖНЫЙ НАБОР
+    const optionsToUse = isFamily ? familyOptions : selfOptions;
+
+     // ОБНОВЛЯЕМ ВСЕ ОПЦИИ
+    staySelect.querySelectorAll('option').forEach(option => {
+        const originalValue = option.value;
+        
+        if (optionsToUse[originalValue]) {
+            option.textContent = optionsToUse[originalValue];
+        }
     });
     
-    if (!guestsCountSelect) {
-        console.error('❌ Элемент #guests-count не найден!');
-        return;
+    // ВОССТАНАВЛИВАЕМ ВЫБРАННОЕ ЗНАЧЕНИЕ
+    if (currentValue) {
+        const optionToSelect = staySelect.querySelector(`option[value="${currentValue}"]`);
+        if (optionToSelect) {
+            optionToSelect.selected = true;
+        }
     }
+}
+
+// ========== ИНИЦИАЛИЗАЦИЯ И УПРАВЛЕНИЕ ФОРМОЙ ==========
+
+// Инициализация формы
+function initializeForm() {
+    // Проверяем, была ли форма отправлена
+    const formWasSubmitted = localStorage.getItem('form_was_submitted') === 'true';
+    const savedCode = localStorage.getItem('wedding_form_code');
     
-    if (!additionalGuestsContainer) {
-        console.error('❌ Элемент #additional-guests не найден!');
-        return;
-    }
-    
-    if (!guestForm) {
-        console.error('❌ Элемент #guest-form не найден!');
-        return;
-    }
-    
-    console.log('✅ Все элементы формы найдены!');
-    
-    // 2. Функция для добавления полей дополнительных гостей
-    function updateGuestFields() {
-        const guestsCount = parseInt(guestsCountSelect.value);
-        console.log('Количество гостей изменено на:', guestsCount);
+    // Показываем сообщение только если форма БЫЛА отправлена
+    if (formWasSubmitted && savedCode && previousFillMessage && editExistingLink) {
+        // Формируем ссылку для редактирования
+         const editUrl = `${window.location.origin}/edit.html?code=${encodeURIComponent(savedCode)}`;
         
-        additionalGuestsContainer.innerHTML = '';
-        
-        if (guestsCount > 1) {
-            additionalGuestsContainer.style.display = 'block';
-            
-            for (let i = 2; i <= guestsCount; i++) {
-                const div = document.createElement('div');
-                div.className = 'form-group';
-                div.innerHTML = `
-                    <label for="guest${i}">Name Gast ${i}:</label>
-                    <input type="text" id="guest${i}" name="guest${i}" 
-                           class="form-control" placeholder="Name des Gasts eingeben">
-                `;
-                additionalGuestsContainer.appendChild(div);
-            }
-        } else {
-            additionalGuestsContainer.style.display = 'none';
+        // Устанавливаем ссылку
+        editExistingLink.href = editUrl;
+        editExistingLink.textContent = 'Meine Antworten bearbeiten';
+        previousFillMessage.style.display = 'block';
+    }
+    
+    // Генерируем новый код, если его нет
+    if (!savedCode) {
+        updateUniqueCode();
+    } else {
+        // Используем существующий код
+        const uniqueCodeInput = document.getElementById('unique-code');
+        if (uniqueCodeInput) {
+            uniqueCodeInput.value = savedCode;
         }
     }
     
-    // 3. Вешаем обработчик изменения количества гостей
-    guestsCountSelect.addEventListener('change', updateGuestFields);
+    // Устанавливаем начальные опции
+    const isFamily = document.querySelector('input[name="for-who"]:checked')?.value === 'family';
+    updateCarOptions(isFamily);
+    updateStayOptions(isFamily);
+}
+
+// Основная инициализация
+function initResponseForm() {
+    console.log('📝 Инициализация формы ответов...');
+    console.log('=== DEBUG FORM INIT ===');
+    console.log('1. Форма guest-form:', document.getElementById('guest-form'));
+    console.log('2. Поле name:', document.getElementById('name'));
+    console.log('3. Поле phone:', document.getElementById('phone'));
+    console.log('4. Форма на странице?', !!document.getElementById('guest-form'));
+    console.log('5. Текущий URL:', window.location.href);
     
-    // 4. Инициализируем поля если в URL уже есть значение (guests-count=3)
-    if (guestsCountSelect.value && parseInt(guestsCountSelect.value) > 1) {
-        console.log('Инициализируем поля с выбранным значением:', guestsCountSelect.value);
-        updateGuestFields();
+    if (!document.getElementById('guest-form')) {
+        console.error('❌ Форма не найдена на странице!');
+        return;
     }
     
-    // Обработчик формы (formspree):
-guestForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
+    // Инициализируем переменные
+    forWhoRadios = document.querySelectorAll('input[name="for-who"]');
+    familyWarning = document.getElementById('family-warning');
+    guestsNamesContainer = document.getElementById('guests-names-container');
+    drinksSingleContainer = document.getElementById('drinks-single-container');
+    drinksMultipleContainer = document.getElementById('drinks-multiple-container');
+    drinksSingle = document.getElementById('drinks-single');
+    drinksMultiple = document.getElementById('drinks-multiple');
+    nameLabel = document.getElementById('name-label');
+    drinksLabel = document.getElementById('drinks-label');
+    stayLabel = document.getElementById('stay-label');
+    carLabel = document.getElementById('car-label');
+    carSelect = document.getElementById('car');
+    nameInput = document.getElementById('name');
+    phoneInput = document.getElementById('phone');
+    staySelect = document.getElementById('stay');
+    guestsNamesTextarea = document.getElementById('guests-names');
+    guestForm = document.getElementById('guest-form');
+    editLinkContainer = document.getElementById('edit-link-container');
+    editLinkDisplay = document.getElementById('edit-link-display');
+    previousFillMessage = document.getElementById('previous-fill-message');
+    editExistingLink = document.getElementById('edit-existing-link');
+    finalMessage = document.getElementById('final-message');
+messageText = document.getElementById('message-text');
     
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = 'Wird gesendet...';
-    submitBtn.disabled = true;
+    // Проверяем обязательные элементы
+    if (!guestForm || !nameInput || !phoneInput) {
+        console.error('❌ Не найдены обязательные элементы формы');
+        return;
+    }
     
-    try {
-        // Собираем данные формы
-        const formData = {
-            name: document.getElementById('name').value.trim(),
-            guests_count: guestsCountSelect.value,
-            drinks: getSelectedOptions('drinks').join(', '),
-            stay: document.getElementById('stay').value,
-            car: document.getElementById('car').value,
-            track: document.getElementById('track').value.trim(),
-            phone: document.getElementById('phone').value.trim()
-        };
-        
-        // Собираем дополнительные имена гостей
-        const additionalGuests = [];
-        const guestInputs = document.querySelectorAll('#additional-guests input');
-        guestInputs.forEach(input => {
-            if (input.value.trim()) {
-                additionalGuests.push(input.value.trim());
-            }
+    // Настройка обновления уникального кода
+    nameInput.addEventListener('input', updateUniqueCode);
+    phoneInput.addEventListener('input', updateUniqueCode);
+    
+    // Обработчик переключения "Себя"/"Семью"
+    if (forWhoRadios && forWhoRadios.length > 0) {
+        forWhoRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                const isFamily = this.value === 'family';
+                
+                // Показываем/скрываем элементы
+                if (familyWarning) familyWarning.style.display = isFamily ? 'flex' : 'none';
+                if (guestsNamesContainer) guestsNamesContainer.style.display = isFamily ? 'block' : 'none';
+                
+                // Переключаем напитки
+                if (drinksSingleContainer) drinksSingleContainer.style.display = isFamily ? 'none' : 'block';
+                if (drinksMultipleContainer) drinksMultipleContainer.style.display = isFamily ? 'block' : 'none';
+                
+                // Обновляем обязательность полей
+                if (guestsNamesTextarea) guestsNamesTextarea.required = isFamily;
+                if (drinksSingle) drinksSingle.required = !isFamily;
+                if (drinksMultiple) drinksMultiple.required = isFamily;
+                
+                // Обновляем опции
+                updateCarOptions(isFamily);
+                updateStayOptions(isFamily);
+            });
         });
+    }
+    
+    // Инициализируем форму
+    initializeForm();
+    
+    // Устанавливаем обработчик отправки формы
+    setupFormSubmitHandler();
+}
+
+// ========== ОТПРАВКА ФОРМЫ ==========
+
+// Функция для показа сообщений об ошибках
+function showErrorMessage(message) {
+    console.error('❌ Ошибка:', message);
+    
+    // Использовать блок для сообщений
+    const finalMessage = document.getElementById('final-message');
+    const messageText = document.getElementById('message-text');
+    
+    if (finalMessage && messageText) {
+        finalMessage.style.background = 'rgba(255, 0, 0, 0.1)';
+        finalMessage.style.borderLeftColor = '#d32f2f';
+        messageText.style.color = '#d32f2f';
+        messageText.innerHTML = `<strong>${message}</strong>`;
+        finalMessage.style.display = 'block';
+        finalMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+        // Fallback: простой alert
+        alert(message);
+    }
+}
+
+// Настройка обработчика отправки
+function setupFormSubmitHandler() {
+    if (!guestForm) return;
+    
+    guestForm.addEventListener('submit', async function(e) {
+        e.preventDefault(); // ВАЖНО: предотвращаем стандартную отправку
         
-        if (additionalGuests.length > 0) {
-            formData.additional_guests = additionalGuests.join(', ');
-        }
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Отправка...';
+        submitBtn.disabled = true;
         
-        // Проверка обязательных полей
-        if (!formData.name || !formData.phone) {
-            showFormMessage('❌ Bitte fülle Namen und Telefon aus', 'error');
+        try {
+            // Собираем данные формы
+            const formData = collectFormData();
+            
+            // Проверка обязательных полей
+            if (!validateFormData(formData)) {
+                showErrorMessage('❌ Bitte alle Pflichtfelder (*) ausfüllen');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
+            
+            // Отправка на Formspree
+            const response = await sendToFormspree(formData);
+            
+            if (response.ok) {
+                // УСПЕХ!
+                handleFormSuccess(formData);
+                
+                // Очищаем форму (опционально)
+                // guestForm.reset();
+                
+            } else {
+                throw new Error('Formspree meldet einen Fehler');
+            }
+            
+        } catch (error) {
+            console.error('Ошибка отправки:', error);
+            showErrorMessage('Fehler beim Senden. Bitte versuchen Sie es erneut.');
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;
-            return;
         }
+    });
+}
+
+// ========== СОХРАНЕНИЕ ДАННЫХ ДЛЯ РЕДАКТИРОВАНИЯ ==========
+
+// Сохраняем данные формы в localStorage
+function saveFormDataForEditing(formData) {
+    try {
+        const saveData = {
+            ...formData,
+            timestamp: Date.now(),
+            lastEdited: new Date().toLocaleString()
+        };
         
-        // === ОТПРАВКА ЧЕРЕЗ FORMSPREE ===
-        const response = await fetch('https://formspree.io/f/mbdlvbkg', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                // Эти поля Formspree понимает автоматически
-                _subject: `Заявка на свадебную вечеринку от ${formData.name}`,
-                _replyto: 'katerine.abramova@gmail.com',
-                
-                // Все остальные данные
-                Имя: formData.name,
-                Телефон: formData.phone,
-                "Количество гостей": formData.guests_count,
-                "Дополнительные гости": formData.additional_guests || 'нет',
-                "Что будут пить": formData.drinks,
-                "Остаются на ночь": formData.stay,
-                "Приезжают на авто": formData.car,
-                "Любимый трек": formData.track || 'не указано',
-                
-                // Полный текст для удобного чтения в почте
-                message: `НОВАЯ ЗАЯВКА НА СВАДЕБНУЮ ВЕЧЕРИНКУ!
+        const key = `wedding_form_data_${formData.unique_code}`;
+        localStorage.setItem(key, JSON.stringify(saveData));
+        
+        console.log('💾 Данные формы сохранены для редактирования:', key);
+        return true;
+    } catch (error) {
+        console.error('❌ Ошибка сохранения данных формы:', error);
+        return false;
+    }
+}
 
-КТО: ${formData.name}
+// Получаем данные формы по коду
+function getFormDataByCode(code) {
+    try {
+        const key = `wedding_form_data_${code}`;
+        const data = localStorage.getItem(key);
+        
+        if (data) {
+            return JSON.parse(data);
+        }
+        return null;
+    } catch (error) {
+        console.error('❌ Ошибка получения данных формы:', error);
+        return null;
+    }
+}
+
+// Сбор данных формы
+function collectFormData() {
+    const isFamily = document.querySelector('input[name="for-who"]:checked')?.value === 'family';
+    
+    const data = {
+        name: nameInput ? nameInput.value.trim() : '',
+        phone: phoneInput ? phoneInput.value.trim() : '',
+        for_who: isFamily ? 'Familie/Freundeskreis' : 'Mich selbst',
+        drinks: '',
+        stay: staySelect ? staySelect.value : '',
+        car: carSelect ? carSelect.value : '',
+        track: document.getElementById('track')?.value.trim() || '',
+        comments: document.getElementById('comments')?.value.trim() || '',
+        unique_code: document.getElementById('unique-code')?.value || ''
+    };
+    
+    // Обработка напитков
+    if (isFamily && drinksMultiple) {
+        const selectedOptions = Array.from(drinksMultiple.selectedOptions)
+            .map(opt => opt.text);
+        data.drinks = selectedOptions.join(', ');
+    } else if (!isFamily && drinksSingle) {
+        data.drinks = drinksSingle.options[drinksSingle.selectedIndex]?.text || '';
+    }
+    
+    // Обработка дополнительных гостей
+    if (isFamily && guestsNamesTextarea && guestsNamesTextarea.value.trim()) {
+        data.guests_names = guestsNamesTextarea.value.trim();
+    }
+    
+    // Проверка на "Решу позже"
+    data.has_later = 
+        (drinksSingle && drinksSingle.value === 'Позже') ||
+        (drinksMultiple && Array.from(drinksMultiple.selectedOptions).some(opt => opt.value === 'Позже')) ||
+        (carSelect && carSelect.value === 'Позже') ||
+        (staySelect && staySelect.value === 'Позже');
+
+     const fullData = {
+        ...data,
+        timestamp: Date.now(),
+        date: new Date().toLocaleString('ru-RU')
+    };
+
+    // Сохраняем для возможного редактирования
+    saveFormDataForEditing(fullData);
+    
+    return data;
+}
+
+// Валидация данных
+function validateFormData(data) {
+    if (!data.name || !data.phone) return false;
+    
+    // Проверка телефона (упрощенная)
+    const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
+    if (!phoneRegex.test(data.phone)) return false;
+    
+    // Если выбрана семья, проверяем имена гостей
+    const isFamily = document.querySelector('input[name="for-who"]:checked')?.value === 'family';
+    if (isFamily && (!data.guests_names || data.guests_names.trim().length < 2)) {
+        return false;
+    }
+    
+    return true;
+}
+
+// Отправка на Formspree
+async function sendToFormspree(formData) {
+    const guestList = formData.guests_names ? 
+        `\nСостав гостей:\n${formData.guests_names.replace(/,/g, '\n')}` : 
+        '\nКоличество: 1 гость';
+    
+    const messageText = `
+НОВАЯ ЗАЯВКА НА СВАДЕБНУЮ ВЕЧЕРИНКУ!
+
+КТО ЗАПОЛНЯЛ: ${formData.name}
 ТЕЛЕФОН: ${formData.phone}
-
-ГОСТИ:
-• Всего: ${formData.guests_count} человека
-${additionalGuests.length > 0 ? `• Имена: ${additionalGuests.join(', ')}\n` : ''}
+ЗАПОЛНЕНО ЗА: ${formData.for_who}
+${guestList}
 
 ОТВЕТЫ:
 • Напитки: ${formData.drinks}
 • Ночевка: ${formData.stay}
 • Авто: ${formData.car}
-• Трек: ${formData.track || 'не указано'}
+• Любимый трек: ${formData.track || 'не указано'}
+${formData.comments ? `• Комментарии: ${formData.comments}` : ''}
 
-ОТПРАВЛЕНО: ${new Date().toLocaleString('ru-RU')}`
-            })
-        });
-        
-        if (response.ok) {
-            // УСПЕХ!
-            showFormMessage('Anmeldung erfolgreich! Bei Änderungen bitte Bescheid geben.', 'success');
-            
-            // Сбрасываем форму
-            guestForm.reset();
-            additionalGuestsContainer.style.display = 'none';
-            additionalGuestsContainer.innerHTML = '';
-            
-            // Возвращаем кнопку
-            setTimeout(() => {
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-                
-                // Убираем сообщение через 5 сек
-                const msg = document.querySelector('.form-message');
-                if (msg) {
-                    setTimeout(() => msg.remove(), 5000);
-                }
-            }, 2000);
-            
-        } else {
-            throw new Error('Formspree вернул ошибку');
-        }
-        
-    } catch (error) {
-        console.error('Ошибка:', error);
-        showFormMessage('Fehler beim Senden. Bitte versuche es erneut.', 'error');
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-    }
-});
-
-    // Функция для получения выбранных опций в мультиселекте
-function getSelectedOptions(selectId) {
-    const select = document.getElementById(selectId);
-    if (!select) return [];
+УНИКАЛЬНЫЙ КОД: ${formData.unique_code}
+ОТПРАВЛЕНО: ${new Date().toLocaleString('ru-RU')}`;
     
-    const selected = [];
-    for (let i = 0; i < select.options.length; i++) {
-        if (select.options[i].selected) {
-            // Более понятные названия для email
-            const value = select.options[i].value;
-            const text = select.options[i].text;
+    return await fetch('https://formspree.io/f/mbdlvbkg', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            _subject: `Заявка на свадебную вечеринку от ${formData.name}`,
+            _replyto: 'katerine.abramova@gmail.com',
             
-            // Используем текст опции для лучшей читаемости в email
-            selected.push(text);
-        }
-    }
-    return selected;
-}
+            // Основные поля
+            "Заполнил(а)": formData.name,
+            "Телефон": formData.phone,
+            "Заполнено за": formData.for_who,
+            "Состав гостей": formData.guests_names || '1 гость',
+            "Что будут пить": formData.drinks,
+            "Ночевка": formData.stay,
+            "Авто": formData.car,
+            "Любимый трек": formData.track || 'не указано',
+            "Комментарии": formData.comments || '',
+            "Уникальный код": formData.unique_code,
+            
+            // Полное сообщение
+            message: messageText
+        })
+    });
 }
 
-// ========== ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ (ИСПРАВЛЕННАЯ) ==========
+// Обработка успешной отправки
+function handleFormSuccess(formData) {
+    console.log('✅ Форма успешно отправлена!', formData);
+    // Устанавливаем флаг отправки
+    localStorage.setItem('form_was_submitted', 'true');
+
+    // Сохраняем данные для возможного редактирования
+    saveFormDataForEditing(formData);
+
+    
+    if (!guestForm) {
+        console.error('❌ Форма не найдена!');
+        return;
+    }
+    
+    if (finalMessage && messageText) {
+        // Определяем текст в зависимости от наличия "Решу позже"
+        if (formData.has_later) {
+            // Если есть "Решу позже" - меняем стиль и текст
+            finalMessage.style.background = 'rgba(40, 167, 69, 0.1)';
+            finalMessage.style.borderLeftColor = '#28a745';
+            messageText.style.color = '#155724';
+            messageText.innerHTML = '<strong>✅ Danke! Eure Antworten wurden gespeichert.<br>Vergesst nicht, uns Bescheid zu geben, wenn ihr euch entschieden habt!</strong>';
+        } else {
+            // Если всё определили - стандартное сообщение
+            finalMessage.style.background = 'rgba(40, 167, 69, 0.1)';
+            finalMessage.style.borderLeftColor = '#28a745';
+            messageText.style.color = '#155724';
+            messageText.innerHTML = '<strong>✅ Danke! Eure Antworten wurden gespeichert.<br>Falls sich eure Pläne ändern, gebt uns bitte Bescheid!</strong>';
+        }
+        
+        // Показываем сообщение
+        finalMessage.style.display = 'block';
+
+        // Показываем контейнер с ссылкой для редактирования
+        if (editLinkContainer) {
+            editLinkContainer.style.display = 'block';
+            
+            // Обновляем ссылку для редактирования
+            const uniqueCodeInput = document.getElementById('unique-code');
+            if (uniqueCodeInput && editLinkDisplay) {
+                const code = uniqueCodeInput.value;
+                const editUrl = `${window.location.origin}/edit.html?code=${encodeURIComponent(code)}`;
+                editLinkDisplay.href = editUrl;
+                // Отображаем ЧЕЛОВЕКО-ЧИТАЕМУЮ версию
+    editLinkDisplay.textContent = `${window.location.origin}/edit.html?code=${code}`;
+            }
+        }
+
+        // Блокируем всю форму
+    const formFields = guestForm.querySelectorAll('input, select, textarea');
+    formFields.forEach(field => {
+        field.disabled = true;
+        field.style.opacity = '0.7';
+        field.style.cursor = 'not-allowed';
+    });
+
+        // Для радио-кнопок добавляем отдельно
+const radioButtons = guestForm.querySelectorAll('input[type="radio"]');
+radioButtons.forEach(radio => {
+    radio.disabled = true;
+    radio.style.opacity = '0.7';
+    radio.style.cursor = 'not-allowed';
+});
+    
+    // Кнопка "Я буду!" остается disabled
+    const submitBtn = guestForm.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Ich komme!';
+        submitBtn.style.background = '#6c757d';
+        submitBtn.style.cursor = 'not-allowed';
+    }
+        
+        // Прокручиваем к сообщению
+        finalMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+}
+
+// ========== ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ==========
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🔥 DOM загружен, инициализируем...');
     
-    // === ГАМБУРГЕР МЕНЮ (ДОБАВЬТЕ ЭТОТ БЛОК В НАЧАЛЕ) ===
+    // === ГАМБУРГЕР МЕНЮ (ЭТОТ БЛОК В НАЧАЛЕ) ===
     const hamburger = document.getElementById('hamburger');
     const menuLinks = document.querySelector('.menu-links');
     
@@ -675,8 +990,13 @@ document.addEventListener('DOMContentLoaded', function() {
     updateTimer();
     countdownInterval = setInterval(updateTimer, 1000);
     
-    // 2. Инициализируем форму ответов (ДОБАВЬТЕ ЭТУ СТРОКУ!)
-    initResponseForm();
+    // 2. Форма ответов - ТОЛЬКО ЕСЛИ ОНА ЕСТЬ НА СТРАНИЦЕ
+    if (document.getElementById('guest-form')) {
+        console.log('📋 Форма найдена, инициализируем...');
+        initResponseForm();
+    } else {
+        console.log('📭 Форма ответов отсутствует на этой странице');
+    }
     
     // 3. Инициализируем игру Memory
     setTimeout(initMemoryGame, 100);
@@ -1329,7 +1649,7 @@ function adjustGameForMobile() {
     });
 }
 
-// Добавим CSS для анимаций и кнопок если нет
+// CSS для анимаций и кнопок
 if (!document.querySelector('#game-animations')) {
     const style = document.createElement('style');
     style.id = 'game-animations';
