@@ -1029,6 +1029,13 @@ textarea:invalid::placeholder {
     color: rgba(220, 53, 69, 0.7);
 }
 
+/* Плавные переходы для всех полей формы */
+input,
+select,
+textarea {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
 /* Стили для мультиселекта напитков */
 select[multiple] {
     height: auto;
