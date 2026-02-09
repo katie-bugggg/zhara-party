@@ -504,30 +504,6 @@ function updateSubmitButtonText() {
     }
 }
 
-// Функция форматирования телефона - УДАЛЯЕМ
-// function formatPhoneNumber(input) {
-//    if (!input) return '';
-    
-    // Удаляем все нецифровые символы
- //   let numbers = input.replace(/\D/g, '');
-    
-    // Ограничиваем длину (международный формат: код страны + номер)
-  //  if (numbers.length > 15) numbers = numbers.substring(0, 15);
-    
-    // Форматируем в зависимости от длины
-  //  if (numbers.length <= 1) {
-   //     return numbers;
-  //  } else if (numbers.length <= 4) {
-  //      return `+${numbers}`;
-  //  } else if (numbers.length <= 7) {
-   //     return `+${numbers.substring(0, 1)} (${numbers.substring(1, 4)}) ${numbers.substring(4)}`;
-   // } else if (numbers.length <= 9) {
-    //    return `+${numbers.substring(0, 1)} (${numbers.substring(1, 4)}) ${numbers.substring(4, 7)}-${numbers.substring(7)}`;
-   // } else {
-   //     return `+${numbers.substring(0, 1)} (${numbers.substring(1, 4)}) ${numbers.substring(4, 7)}-${numbers.substring(7, 9)}-${numbers.substring(9)}`;
-  //  }
-// }
-
 // Функция для очистки телефона (удаляет форматирование)
 function cleanPhoneNumber(phone) {
     return phone ? phone.replace(/\D/g, '') : '';
