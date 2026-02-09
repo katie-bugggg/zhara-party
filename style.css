@@ -1007,15 +1007,26 @@ input, select, textarea {
     box-sizing: border-box;
 }
 
-input:invalid {
+/* Стили для невалидных полей (работает для input, select, textarea) */
+input:invalid,
+select:invalid,
+textarea:invalid {
     border-color: #dc3545;
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
 
-.form-row {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 15px;
+/* Стиль для фокуса на невалидном поле */
+input:invalid:focus,
+select:invalid:focus,
+textarea:invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+/* Стиль для placeholder в невалидном поле (если нужно) */
+input:invalid::placeholder,
+textarea:invalid::placeholder {
+    color: rgba(220, 53, 69, 0.7);
 }
 
 /* Стили для мультиселекта напитков */
@@ -1272,16 +1283,6 @@ select option:disabled {
     .multiselect-hint {
         display: none !important;
     }
-}
-
-/* Стиль для обязательного поля при выборе "Свой вариант" */
-.required-field {
-    border-color: #dc3545 !important;
-    background-color: rgba(220, 53, 69, 0.05);
-}
-
-.required-field:focus {
-    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
 }
 
 /* Блок 8: Как добраться с единой рамкой */
