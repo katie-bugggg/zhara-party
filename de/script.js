@@ -396,12 +396,12 @@ function updateUniqueCode() {
         // Обновляем ссылку для редактирования
         if (editLinkDisplay) {
     const encodedCode = encodeURIComponent(code);
-    const editUrl = `${window.location.origin}/edit.html?code=${encodedCode}`;
+    const editUrl = `${window.location.origin}/de/edit.html?code=${encodedCode}`;
 
     editLinkDisplay.href = editUrl;
     
     // Показываем ЧЕЛОВЕКО-ЧИТАЕМУЮ версию (декодированную)
-    editLinkDisplay.textContent = `${window.location.origin}/edit.html?code=${code}`;
+    editLinkDisplay.textContent = `${window.location.origin}/de/edit.html?code=${code}`;
 }
     }
 }
@@ -520,7 +520,7 @@ function initializeForm() {
     // Показываем сообщение только если форма БЫЛА отправлена
     if (formWasSubmitted && savedCode && previousFillMessage && editExistingLink) {
         // Формируем ссылку для редактирования
-         const editUrl = `${window.location.origin}/edit.html?code=${encodeURIComponent(savedCode)}`;
+         const editUrl = `${window.location.origin}/de/edit.html?code=${encodeURIComponent(savedCode)}`;
         
         // Устанавливаем ссылку
         editExistingLink.href = editUrl;
@@ -980,10 +980,10 @@ function handleFormSuccess(formData) {
             const uniqueCodeInput = document.getElementById('unique-code');
             if (uniqueCodeInput && editLinkDisplay) {
                 const code = uniqueCodeInput.value;
-                const editUrl = `${window.location.origin}/edit.html?code=${encodeURIComponent(code)}`;
+                const editUrl = `${window.location.origin}/de/edit.html?code=${encodeURIComponent(code)}`;
                 editLinkDisplay.href = editUrl;
                 // Отображаем ЧЕЛОВЕКО-ЧИТАЕМУЮ версию
-    editLinkDisplay.textContent = `${window.location.origin}/edit.html?code=${code}`;
+    editLinkDisplay.textContent = `${window.location.origin}/de/edit.html?code=${code}`;
             }
         }
 
