@@ -504,6 +504,35 @@ function updateSubmitButtonText() {
     }
 }
 
+// Функция форматирования телефона
+function formatPhoneNumber(input) {
+    if (!input) return '';
+    
+    // Удаляем все нецифровые символы
+    let numbers = input.replace(/\D/g, '');
+    
+    // Ограничиваем длину (международный формат: код страны + номер)
+    if (numbers.length > 15) numbers = numbers.substring(0, 15);
+    
+    // Форматируем в зависимости от длины
+    if (numbers.length <= 1) {
+        return numbers;
+    } else if (numbers.length <= 4) {
+        return `+${numbers}`;
+    } else if (numbers.length <= 7) {
+        return `+${numbers.substring(0, 1)} (${numbers.substring(1, 4)}) ${numbers.substring(4)}`;
+    } else if (numbers.length <= 9) {
+        return `+${numbers.substring(0, 1)} (${numbers.substring(1, 4)}) ${numbers.substring(4, 7)}-${numbers.substring(7)}`;
+    } else {
+        return `+${numbers.substring(0, 1)} (${numbers.substring(1, 4)}) ${numbers.substring(4, 7)}-${numbers.substring(7, 9)}-${numbers.substring(9)}`;
+    }
+}
+
+// Функция для очистки телефона (удаляет форматирование)
+function cleanPhoneNumber(phone) {
+    return phone ? phone.replace(/\D/g, '') : '';
+}
+
 // ========== ИНИЦИАЛИЗАЦИЯ И УПРАВЛЕНИЕ ФОРМОЙ ==========
 
 // Инициализация формы
@@ -579,7 +608,7 @@ function initResponseForm() {
     previousFillMessage = document.getElementById('previous-fill-message');
     editExistingLink = document.getElementById('edit-existing-link');
     finalMessage = document.getElementById('final-message');
-messageText = document.getElementById('message-text');
+    messageText = document.getElementById('message-text');
     
     // Проверяем обязательные элементы
     if (!guestForm || !nameInput || !phoneInput) {
@@ -590,6 +619,45 @@ messageText = document.getElementById('message-text');
     // Настройка обновления уникального кода
     nameInput.addEventListener('input', updateUniqueCode);
     phoneInput.addEventListener('input', updateUniqueCode);
+
+     // === ДОБАВЬТЕ ЗДЕСЬ: обработчики форматирования телефона ===
+    if (phoneInput) {
+        // Плейсхолдер с примером
+        phoneInput.placeholder = '+7 (999) 123-45-67';
+        
+        // Обработчик ввода
+        phoneInput.addEventListener('input', function(e) {
+            const cursorPosition = this.selectionStart;
+            const formatted = formatPhoneNumber(this.value);
+            
+            // Сохраняем позицию курсора
+            this.value = formatted;
+            
+            // Пытаемся восстановить позицию курсора
+            const diff = formatted.length - e.target.value.length;
+            if (cursorPosition > 0) {
+                this.setSelectionRange(cursorPosition + diff, cursorPosition + diff);
+            }
+            
+            // Также обновляем уникальный код (если уже есть обработчик)
+            updateUniqueCode();
+        });
+        
+        // Обработчик потери фокуса - финальное форматирование
+        phoneInput.addEventListener('blur', function() {
+            if (this.value.trim()) {
+                this.value = formatPhoneNumber(this.value);
+            }
+        });
+        
+        // Обработчик получения фокуса
+        phoneInput.addEventListener('focus', function() {
+            if (!this.value) {
+                this.placeholder = '+7 (999) 123-45-67';
+            }
+        });
+    }
+    // === КОНЕЦ ДОБАВЛЕННОГО КОДА ===
     
     // Обработчик переключения "Себя"/"Семью"
     if (forWhoRadios && forWhoRadios.length > 0) {
@@ -742,7 +810,8 @@ function collectFormData() {
     
     const data = {
         name: nameInput ? nameInput.value.trim() : '',
-        phone: phoneInput ? phoneInput.value.trim() : '',
+       // phone: phoneInput ? phoneInput.value.trim() : '',
+        phone: phoneInput ? cleanPhoneNumber(phoneInput.value) : '', // Очищаем от форматирования
         for_who: isFamily ? 'Семья/компания' : 'Себя',
         drinks: '',
         stay: staySelect ? staySelect.value : '',
@@ -789,9 +858,19 @@ function collectFormData() {
 function validateFormData(data) {
     if (!data.name || !data.phone) return false;
     
-    // Проверка телефона (упрощенная)
-    const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
-    if (!phoneRegex.test(data.phone)) return false;
+    // Проверка телефона (упрощенная) === ЗАМЕНИТЕ ЭТОТ БЛОК ===
+   // const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
+   // if (!phoneRegex.test(data.phone)) return false;
+
+   // Новая проверка (добавить):
+    const cleanedPhone = cleanPhoneNumber(data.phone);
+    const phoneRegex = /^[78]\d{10}$/; // 11 цифр, начинается с 7 или 8
+    
+    if (cleanedPhone.length !== 11 || !phoneRegex.test(cleanedPhone)) {
+        alert('Пожалуйста, введите корректный номер телефона (11 цифр, начинается с 7 или 8)');
+        return false;
+    }
+    // === КОНЕЦ ЗАМЕНЫ === 
     
     // Если выбрана семья, проверяем имена гостей
     const isFamily = document.querySelector('input[name="for-who"]:checked')?.value === 'family';
