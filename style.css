@@ -1269,6 +1269,16 @@ select option:disabled {
     }
 }
 
+/* Стиль для обязательного поля при выборе "Свой вариант" */
+.required-field {
+    border-color: #dc3545 !important;
+    background-color: rgba(220, 53, 69, 0.05);
+}
+
+.required-field:focus {
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+}
+
 /* Блок 8: Как добраться с единой рамкой */
 .map-unified-container {
     background-color: transparent; /* Изменено с white на прозрачный */
