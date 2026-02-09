@@ -584,12 +584,30 @@ function initResponseForm() {
     previousFillMessage = document.getElementById('previous-fill-message');
     editExistingLink = document.getElementById('edit-existing-link');
     finalMessage = document.getElementById('final-message');
-messageText = document.getElementById('message-text');
+    messageText = document.getElementById('message-text');
     
     // Проверяем обязательные элементы
     if (!guestForm || !nameInput || !phoneInput) {
         console.error('❌ Не найдены обязательные элементы формы');
         return;
+    }
+
+    // Обработчик для браузерной валидации телефона
+    if (phoneInput) {
+        phoneInput.addEventListener('invalid', function(e) {
+            e.preventDefault(); // Отменяем стандартное сообщение
+            
+            if (!this.value.trim()) {
+                this.setCustomValidity('Bitte geben Sie Ihre Telefonnummer ein');
+            } else if (!isValidPhoneNumber(this.value)) {
+                this.setCustomValidity('Bitte geben Sie eine gültige Telefonnummer ein');
+            }
+        });
+        
+        // Сбрасываем валидацию при вводе
+        phoneInput.addEventListener('input', function() {
+            this.setCustomValidity('');
+        });
     }
     
     // Настройка обновления уникального кода
