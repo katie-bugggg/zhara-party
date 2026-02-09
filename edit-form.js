@@ -285,6 +285,11 @@ function updateEditStayOptions(isFamily) {
     }
 }
 
+// Функция для очистки телефона (удаляет форматирование)
+function cleanPhoneNumber(phone) {
+    return phone ? phone.replace(/\D/g, '') : '';
+}
+
 // Инициализация формы редактирования
 function initEditForm() {
     console.log('✏️ Инициализация формы редактирования...');
@@ -305,6 +310,19 @@ function initEditForm() {
     editTrackInput = document.getElementById('edit-track');
     editCommentsTextarea = document.getElementById('edit-comments');
     editUniqueCodeInput = document.getElementById('edit-unique-code');
+    
+    // обработчик сброса валидации 
+    if (editPhoneInput) {
+        // Сбрасываем валидацию при вводе
+        editPhoneInput.addEventListener('input', function() {
+            this.setCustomValidity('');
+        });
+        
+        // Также можно добавить при изменении
+        editPhoneInput.addEventListener('change', function() {
+            this.setCustomValidity('');
+        });
+    }
     
     // Проверяем элементы
     if (!editForm) {
@@ -512,7 +530,8 @@ function collectEditFormData() {
     
     const data = {
         name: editNameInput ? editNameInput.value.trim() : '',
-        phone: editPhoneInput ? editPhoneInput.value.trim() : '',
+     //   phone: editPhoneInput ? editPhoneInput.value.trim() : '',
+        phone: editPhoneInput ? cleanPhoneNumber(editPhoneInput.value) : '', // Очищаем от форматирования
         for_who: isFamily ? 'Семья/компания' : 'Себя',
         drinks: '',
         stay: editStaySelect ? editStaySelect.value : '',
@@ -551,19 +570,39 @@ function collectEditFormData() {
 
 // Валидация данных редактирования
 function validateEditFormData(data) {
-    if (!data.name || !data.phone) return false;
+    // 1. Проверка на пустые поля
+    if (!data.name || !data.phone) {
+        if (!data.phone && editPhoneInput) {
+            editPhoneInput.setCustomValidity('Пожалуйста, введите номер телефона');
+            editPhoneInput.reportValidity();
+        }
+        return false;
+    }
+    
+    // 2. Проверка телефона
+    const cleanedPhone = cleanPhoneNumber(data.phone);
+    
+    // Российский формат: 11 цифр, начинается с 7 или 8
+    if (cleanedPhone.length !== 11 || !/^[78]/.test(cleanedPhone)) {
+        if (editPhoneInput) {
+            editPhoneInput.setCustomValidity('Пожалуйста, введите корректный номер телефона (11 цифр, начинается с 7 или 8)');
+            editPhoneInput.reportValidity();
+        }
+        return false;
+    }
+    
+    // 3. Все ок - сбрасываем сообщение об ошибке
+    if (editPhoneInput) {
+        editPhoneInput.setCustomValidity('');
+    }
 
-    // Проверка телефона
-    const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
-    if (!phoneRegex.test(data.phone)) return false;
-
-    // Если выбрана семья, проверяем имена гостей
+    // 4. Если выбрана семья, проверяем имена гостей
     const isFamily = document.querySelector('input[name="for-who"]:checked')?.value === 'family';
     if (isFamily && (!data.guests_names || data.guests_names.trim().length < 2)) {
         return false;
     }
 
-    // Если выбран "Свой вариант" в любом поле, комментарии обязательны
+    // 5. Если выбран "Свой вариант" в любом поле, комментарии обязательны
     const staySelect = document.getElementById('edit-stay');
     const carSelect = document.getElementById('edit-car');
     const commentsTextarea = document.getElementById('edit-comments');
