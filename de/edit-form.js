@@ -284,6 +284,11 @@ function updateEditStayOptions(isFamily) {
     }
 }
 
+// Функция для очистки телефона (удаляет форматирование)
+function cleanPhoneNumber(phone) {
+    return phone ? phone.replace(/\D/g, '') : '';
+}
+
 // Инициализация формы редактирования
 function initEditForm() {
     console.log('✏️ Инициализация формы редактирования...');
@@ -304,6 +309,19 @@ function initEditForm() {
     editTrackInput = document.getElementById('edit-track');
     editCommentsTextarea = document.getElementById('edit-comments');
     editUniqueCodeInput = document.getElementById('edit-unique-code');
+
+    // обработчик сброса валидации 
+    if (editPhoneInput) {
+        // Сбрасываем валидацию при вводе
+        editPhoneInput.addEventListener('input', function() {
+            this.setCustomValidity('');
+        });
+        
+        // Также можно добавить при изменении
+        editPhoneInput.addEventListener('change', function() {
+            this.setCustomValidity('');
+        });
+    }
     
     // Проверяем элементы
     if (!editForm) {
@@ -511,7 +529,8 @@ function collectEditFormData() {
     
     const data = {
         name: editNameInput ? editNameInput.value.trim() : '',
-        phone: editPhoneInput ? editPhoneInput.value.trim() : '',
+       // phone: editPhoneInput ? editPhoneInput.value.trim() : '',
+        phone: editPhoneInput ? cleanPhoneNumber(editPhoneInput.value) : '', // Очищаем от форматирования
         for_who: isFamily ? 'Familie/Freundeskreis' : 'Mich selbst',
         drinks: '',
         stay: editStaySelect ? editStaySelect.value : '',
@@ -549,12 +568,34 @@ function collectEditFormData() {
 }
 
 // Валидация данных редактирования
-function validateEditFormData(data) {
-    if (!data.name || !data.phone) return false;
-
-    // Проверка телефона
-    const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
-    if (!phoneRegex.test(data.phone)) return false;
+ // 1. Проверка на пустые поля
+    if (!data.name || !data.phone) {
+        if (!data.phone && editPhoneInput) {
+            editPhoneInput.setCustomValidity('Bitte geben Sie Ihre Telefonnummer ein');
+            editPhoneInput.reportValidity();
+        }
+        return false;
+    }
+    
+    // 2. Проверка телефона
+    const cleanedPhone = cleanPhoneNumber(data.phone);
+    
+    // Немецкий формат: начинается с 49 или 0, 10-15 цифр
+    const isGermanFormat = /^(49|0)/.test(cleanedPhone);
+    const isGermanLength = cleanedPhone.length >= 10 && cleanedPhone.length <= 15;
+    
+    if (!isGermanFormat || !isGermanLength) {
+        if (editPhoneInput) {
+            editPhoneInput.setCustomValidity('Bitte geben Sie eine gültige deutsche Telefonnummer (10-15 Ziffern, beginnt mit 49 oder 0)');
+            editPhoneInput.reportValidity();
+        }
+        return false;
+    }
+    
+    // 3. Все ок - сбрасываем сообщение об ошибке
+    if (editPhoneInput) {
+        editPhoneInput.setCustomValidity('');
+    }
 
     // Если выбрана семья, проверяем имена гостей
     const isFamily = document.querySelector('input[name="for-who"]:checked')?.value === 'family';
