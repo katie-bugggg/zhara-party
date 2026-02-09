@@ -870,13 +870,11 @@ function setupCustomOptionValidation() {
         
         commentsTextarea.required = hasCustomOption;
         
-        // Визуальный индикатор
+        // Визуальный индикатор (только меняем плейсхолдеры)
         if (hasCustomOption) {
             commentsTextarea.placeholder = 'Pflichtfeld bei "Eigener Vorschlag"';
-            commentsTextarea.classList.add('required-field');
         } else {
             commentsTextarea.placeholder = 'Ergänzungen zur Übernachtung, Auto, Getränke oder andere Fragen...';
-            commentsTextarea.classList.remove('required-field');
         }
     }
     
