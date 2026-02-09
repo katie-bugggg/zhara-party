@@ -504,29 +504,29 @@ function updateSubmitButtonText() {
     }
 }
 
-// Функция форматирования телефона
-function formatPhoneNumber(input) {
-    if (!input) return '';
+// Функция форматирования телефона - УДАЛЯЕМ
+// function formatPhoneNumber(input) {
+//    if (!input) return '';
     
     // Удаляем все нецифровые символы
-    let numbers = input.replace(/\D/g, '');
+ //   let numbers = input.replace(/\D/g, '');
     
     // Ограничиваем длину (международный формат: код страны + номер)
-    if (numbers.length > 15) numbers = numbers.substring(0, 15);
+  //  if (numbers.length > 15) numbers = numbers.substring(0, 15);
     
     // Форматируем в зависимости от длины
-    if (numbers.length <= 1) {
-        return numbers;
-    } else if (numbers.length <= 4) {
-        return `+${numbers}`;
-    } else if (numbers.length <= 7) {
-        return `+${numbers.substring(0, 1)} (${numbers.substring(1, 4)}) ${numbers.substring(4)}`;
-    } else if (numbers.length <= 9) {
-        return `+${numbers.substring(0, 1)} (${numbers.substring(1, 4)}) ${numbers.substring(4, 7)}-${numbers.substring(7)}`;
-    } else {
-        return `+${numbers.substring(0, 1)} (${numbers.substring(1, 4)}) ${numbers.substring(4, 7)}-${numbers.substring(7, 9)}-${numbers.substring(9)}`;
-    }
-}
+  //  if (numbers.length <= 1) {
+   //     return numbers;
+  //  } else if (numbers.length <= 4) {
+  //      return `+${numbers}`;
+  //  } else if (numbers.length <= 7) {
+   //     return `+${numbers.substring(0, 1)} (${numbers.substring(1, 4)}) ${numbers.substring(4)}`;
+   // } else if (numbers.length <= 9) {
+    //    return `+${numbers.substring(0, 1)} (${numbers.substring(1, 4)}) ${numbers.substring(4, 7)}-${numbers.substring(7)}`;
+   // } else {
+   //     return `+${numbers.substring(0, 1)} (${numbers.substring(1, 4)}) ${numbers.substring(4, 7)}-${numbers.substring(7, 9)}-${numbers.substring(9)}`;
+  //  }
+// }
 
 // Функция для очистки телефона (удаляет форматирование)
 function cleanPhoneNumber(phone) {
@@ -620,44 +620,11 @@ function initResponseForm() {
     nameInput.addEventListener('input', updateUniqueCode);
     phoneInput.addEventListener('input', updateUniqueCode);
 
-     // === ДОБАВЬТЕ ЗДЕСЬ: обработчики форматирования телефона ===
+     // === обработчик телефона ===
     if (phoneInput) {
         // Плейсхолдер с примером
         phoneInput.placeholder = '+7 (999) 123-45-67';
-        
-        // Обработчик ввода
-        phoneInput.addEventListener('input', function(e) {
-            const cursorPosition = this.selectionStart;
-            const formatted = formatPhoneNumber(this.value);
-            
-            // Сохраняем позицию курсора
-            this.value = formatted;
-            
-            // Пытаемся восстановить позицию курсора
-            const diff = formatted.length - e.target.value.length;
-            if (cursorPosition > 0) {
-                this.setSelectionRange(cursorPosition + diff, cursorPosition + diff);
-            }
-            
-            // Также обновляем уникальный код (если уже есть обработчик)
-            updateUniqueCode();
-        });
-        
-        // Обработчик потери фокуса - финальное форматирование
-        phoneInput.addEventListener('blur', function() {
-            if (this.value.trim()) {
-                this.value = formatPhoneNumber(this.value);
-            }
-        });
-        
-        // Обработчик получения фокуса
-        phoneInput.addEventListener('focus', function() {
-            if (!this.value) {
-                this.placeholder = '+7 (999) 123-45-67';
-            }
-        });
     }
-    // === КОНЕЦ ДОБАВЛЕННОГО КОДА ===
     
     // Обработчик переключения "Себя"/"Семью"
     if (forWhoRadios && forWhoRadios.length > 0) {
