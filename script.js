@@ -622,8 +622,11 @@ function initResponseForm() {
 
      // === обработчик телефона ===
     if (phoneInput) {
-        // Плейсхолдер с примером
-        phoneInput.placeholder = '+7 (999) 123-45-67';
+        // Сброс сообщения при вводе
+        phoneInput.addEventListener('input', function() {
+            this.setCustomValidity('');
+            updateUniqueCode();
+        });
     }
     
     // Обработчик переключения "Себя"/"Семью"
@@ -823,21 +826,30 @@ function collectFormData() {
 
 // Валидация данных
 function validateFormData(data) {
-    if (!data.name || !data.phone) return false;
-    
-    // Проверка телефона (упрощенная) === ЗАМЕНИТЕ ЭТОТ БЛОК ===
-   // const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
-   // if (!phoneRegex.test(data.phone)) return false;
-
-   // Новая проверка (добавить):
-    const cleanedPhone = cleanPhoneNumber(data.phone);
-    const phoneRegex = /^[78]\d{10}$/; // 11 цифр, начинается с 7 или 8
-    
-    if (cleanedPhone.length !== 11 || !phoneRegex.test(cleanedPhone)) {
-        alert('Пожалуйста, введите корректный номер телефона (11 цифр, начинается с 7 или 8)');
+    // Проверка на пустые поля 
+    if (!data.name || !data.phone) {
+        if (!data.phone && phoneInput) {
+            phoneInput.setCustomValidity('Пожалуйста, введите номер телефона');
+            phoneInput.reportValidity();
+        }
         return false;
     }
-    // === КОНЕЦ ЗАМЕНЫ === 
+    
+   // Проверка телефона
+    const cleanedPhone = cleanPhoneNumber(data.phone);
+    
+    if (cleanedPhone.length !== 11 || !/^[78]/.test(cleanedPhone)) {
+        if (phoneInput) {
+            phoneInput.setCustomValidity('Пожалуйста, введите корректный номер телефона (11 цифр, начинается с 7 или 8)');
+            phoneInput.reportValidity();
+        }
+        return false;
+    }
+    
+    // Все ок - сбрасываем сообщение об ошибке
+    if (phoneInput) {
+        phoneInput.setCustomValidity('');
+    }
     
     // Если выбрана семья, проверяем имена гостей
     const isFamily = document.querySelector('input[name="for-who"]:checked')?.value === 'family';
