@@ -811,12 +811,16 @@ function validateFormData(data) {
         return false;
     }
     
-    // Проверка телефона
+    // Проверка телефона - ТОЛЬКО НЕМЕЦКИЙ ФОРМАТ
     const cleanedPhone = cleanPhoneNumber(data.phone);
     
-    if (cleanedPhone.length !== 11 || !/^[78]/.test(cleanedPhone)) {
+    // Немецкий формат: начинается с 49 или 0, 10-15 цифр
+    const isGermanFormat = /^(49|0)/.test(cleanedPhone);
+    const isGermanLength = cleanedPhone.length >= 10 && cleanedPhone.length <= 15;
+    
+    if (!isGermanFormat || !isGermanLength) {
         if (phoneInput) {
-            phoneInput.setCustomValidity('Пожалуйста, введите корректный номер телефона (11 цифр, начинается с 7 или 8)');
+            phoneInput.setCustomValidity('Bitte geben Sie eine gültige deutsche Telefonnummer (10-15 Ziffern, beginnt mit 49 oder 0)');
             phoneInput.reportValidity();
         }
         return false;
