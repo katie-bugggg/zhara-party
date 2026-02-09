@@ -867,13 +867,11 @@ function setupCustomOptionValidation() {
         
         commentsTextarea.required = hasCustomOption;
         
-        // Визуальный индикатор
+        // Визуальный индикатор (меняем только плейсхолдеры)
         if (hasCustomOption) {
             commentsTextarea.placeholder = 'Обязательное поле при выборе "Свой вариант"';
-            commentsTextarea.classList.add('required-field');
         } else {
             commentsTextarea.placeholder = 'Любые уточнения по ночёвке, авто, напиткам или другие вопросы...';
-            commentsTextarea.classList.remove('required-field');
         }
     }
     
