@@ -504,6 +504,11 @@ function updateSubmitButtonText() {
     }
 }
 
+// Функция для очистки телефона (удаляет форматирование)
+function cleanPhoneNumber(phone) {
+    return phone ? phone.replace(/\D/g, '') : '';
+}
+
 // ========== ИНИЦИАЛИЗАЦИЯ И УПРАВЛЕНИЕ ФОРМОЙ ==========
 
 // Инициализация формы
@@ -742,7 +747,8 @@ function collectFormData() {
     
     const data = {
         name: nameInput ? nameInput.value.trim() : '',
-        phone: phoneInput ? phoneInput.value.trim() : '',
+        // phone: phoneInput ? phoneInput.value.trim() : '',
+        phone: phoneInput ? cleanPhoneNumber(phoneInput.value) : '', // Очищаем от форматирования
         for_who: isFamily ? 'Familie/Freundeskreis' : 'Mich selbst',
         drinks: '',
         stay: staySelect ? staySelect.value : '',
@@ -785,21 +791,56 @@ function collectFormData() {
     return data;
 }
 
-// Валидация данных
+// ========== ФУНКЦИИ ВАЛИДАЦИИ ==========
+
+// Функция проверки телефона (универсальная для RU/DE)
+function isValidPhoneNumber(phone) {
+    if (!phone) return false;
+    
+    const cleaned = cleanPhoneNumber(phone);
+    
+    if (!cleaned) return false;
+    
+    // Российский формат: 11 цифр, начинается с 7 или 8
+    const isRussianFormat = cleaned.length === 11 && /^[78]/.test(cleaned);
+    
+    // Немецкий формат: начинается с 49 (код Германии) или 0
+    const isGermanFormat = /^(49|0)/.test(cleaned);
+    // Для Германии: обычно 10-15 цифр
+    const isGermanLength = cleaned.length >= 10 && cleaned.length <= 15;
+    
+    return isRussianFormat || (isGermanFormat && isGermanLength);
+}
+
+// Валидация данных формы
 function validateFormData(data) {
-    if (!data.name || !data.phone) return false;
+    // 1. Проверка на пустые поля (имя обязательно)
+    if (!data.name) return false;
     
-    // Проверка телефона (упрощенная)
-    const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
-    if (!phoneRegex.test(data.phone)) return false;
+    // 2. Проверка телефона (объединенная проверка на пустоту и формат)
+    if (!isValidPhoneNumber(data.phone)) {
+        if (phoneInput) {
+            const message = !data.phone 
+                ? 'Bitte geben Sie Ihre Telefonnummer ein' // Пусто
+                : 'Bitte geben Sie eine gültige Telefonnummer ein'; // Неверный формат
+            phoneInput.setCustomValidity(message);
+            phoneInput.reportValidity();
+        }
+        return false;
+    }
     
-    // Если выбрана семья, проверяем имена гостей
+    // 3. Все ок - сбрасываем сообщение об ошибке
+    if (phoneInput) {
+        phoneInput.setCustomValidity('');
+    }
+    
+    // 4. Если выбрана семья, проверяем имена гостей
     const isFamily = document.querySelector('input[name="for-who"]:checked')?.value === 'family';
     if (isFamily && (!data.guests_names || data.guests_names.trim().length < 2)) {
         return false;
     }
 
-    // Проверка: если выбран "Свой вариант" в любом поле, комментарии обязательны
+    // 5. Проверка: если выбран "Свой вариант" в любом поле, комментарии обязательны
     const staySelect = document.getElementById('stay');
     const carSelect = document.getElementById('car');
     const commentsTextarea = document.getElementById('comments');
