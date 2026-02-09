@@ -813,8 +813,26 @@ function validateFormData(data) {
     
    // Проверка телефона
     const cleanedPhone = cleanPhoneNumber(data.phone);
+
+    // СТАРАЯ ПРОВЕРКА НА ФОРМАТ НОМЕРА, ТОЛЬКО РУС (РАБОЧАЯ)
+   // if (cleanedPhone.length !== 11 || !/^[78]/.test(cleanedPhone)) {
+   //     if (phoneInput) {
+   //         phoneInput.setCustomValidity('Пожалуйста, введите корректный номер телефона (11 цифр, начинается с 7 или 8)');
+   //         phoneInput.reportValidity();
+   //     }
+   //     return false;
+ //   }
+
+    // НОВАЯ ПРОВЕРКА НА ФОРМАТ НОМЕРА, С НЕМЕЦКИМИ
+     // Российский формат: 11 цифр, начинается с 7 или 8
+    const isRussianFormat = cleanedPhone.length === 11 && /^[78]/.test(cleanedPhone);
     
-    if (cleanedPhone.length !== 11 || !/^[78]/.test(cleanedPhone)) {
+    // Немецкий формат: начинается с 49 или 0, 10-15 цифр
+    const isGermanFormat = /^(49|0)/.test(cleanedPhone);
+    const isGermanLength = cleanedPhone.length >= 10 && cleanedPhone.length <= 15;
+    
+    // Принимаем ЛЮБОЙ из форматов
+    if (!isRussianFormat && !(isGermanFormat && isGermanLength)) {
         if (phoneInput) {
             phoneInput.setCustomValidity('Пожалуйста, введите корректный номер телефона (11 цифр, начинается с 7 или 8)');
             phoneInput.reportValidity();
