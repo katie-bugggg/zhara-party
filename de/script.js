@@ -602,6 +602,8 @@ function initResponseForm() {
             } else if (!isValidPhoneNumber(this.value)) {
                 this.setCustomValidity('Bitte geben Sie eine gültige Telefonnummer ein');
             }
+            // ПОКАЗЫВАЕМ сообщение
+            this.reportValidity();
         });
         
         // Сбрасываем валидацию при вводе
@@ -680,6 +682,20 @@ function setupFormSubmitHandler() {
     
     guestForm.addEventListener('submit', async function(e) {
         e.preventDefault(); // ВАЖНО: предотвращаем стандартную отправку
+
+        if (phoneInput) {
+            if (!phoneInput.value.trim()) {
+                phoneInput.setCustomValidity('Bitte geben Sie Ihre Telefonnummer ein');
+                phoneInput.reportValidity();
+                return;
+            } else if (!isValidPhoneNumber(phoneInput.value)) {
+                phoneInput.setCustomValidity('Bitte geben Sie eine gültige Telefonnummer ein');
+                phoneInput.reportValidity();
+                return;
+            } else {
+                phoneInput.setCustomValidity('');
+            }
+        }
         
         const submitBtn = this.querySelector('button[type="submit"]');
         const originalText = submitBtn.textContent;
