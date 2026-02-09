@@ -563,9 +563,9 @@ function validateEditFormData(data) {
     }
 
     // Если выбран "Свой вариант" в любом поле, комментарии обязательны
-    const staySelect = document.getElementById('stay');
-    const carSelect = document.getElementById('car');
-    const commentsTextarea = document.getElementById('comments');
+    const staySelect = document.getElementById('edit-stay');
+    const carSelect = document.getElementById('edit-car');
+    const commentsTextarea = document.getElementById('edit-comments');
     
     const hasCustomOption = 
         (staySelect && staySelect.value === 'Свой вариант') ||
@@ -581,9 +581,9 @@ function validateEditFormData(data) {
 
 // Валидация на заполнение комментария, если выбран "свой вариант"
 function setupCustomOptionValidation() {
-    const staySelect = document.getElementById('stay');
-    const carSelect = document.getElementById('car');
-    const commentsTextarea = document.getElementById('comments');
+    const staySelect = document.getElementById('edit-stay');
+    const carSelect = document.getElementById('edit-car');
+    const commentsTextarea = document.getElementById('edit-comments');
     
     if (!commentsTextarea) return;
     
