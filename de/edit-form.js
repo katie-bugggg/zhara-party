@@ -568,7 +568,7 @@ function collectEditFormData() {
 }
 
 // Валидация данных редактирования
-function validateEditFormData(data) 
+function validateEditFormData(data) {
  // 1. Проверка на пустые поля
     if (!data.name || !data.phone) {
         if (!data.phone && editPhoneInput) {
