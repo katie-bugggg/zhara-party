@@ -992,13 +992,15 @@ function handleFormSuccess(formData) {
         field.style.cursor = 'not-allowed';
     });
 
-        // Для радио-кнопок добавляем отдельно
-const radioButtons = guestForm.querySelectorAll('input[type="radio"]');
-radioButtons.forEach(radio => {
-    radio.disabled = true;
-  //  radio.style.opacity = '0.7';
-  //  radio.style.cursor = 'not-allowed';
-});
+    // Для радио-кнопок добавляем отдельно
+    const radioButtons = guestForm.querySelectorAll('input[type="radio"]');
+    radioButtons.forEach(radio => {
+        radio.disabled = true;
+        const radioOption = radio.closest('.radio-option');
+        if (radioOption) {
+            radioOption.classList.add('disabled-option'); // <-- Добавляем класс
+        }
+    });
     
     // Кнопка "Я буду!" остается disabled
     const submitBtn = guestForm.querySelector('button[type="submit"]');
