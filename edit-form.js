@@ -543,12 +543,12 @@ function collectEditFormData() {
     };
     
     // Обработка напитков
-    if (isFamily && drinksMultiple) {
-        const selectedOptions = Array.from(drinksMultiple.selectedOptions)
+    if (isFamily && editDrinksMultiple) {
+        const selectedOptions = Array.from(editDrinksMultiple.selectedOptions)
             .map(opt => opt.value); // <-- ИСПРАВЛЕНО
         data.drinks = selectedOptions.join(', ');
-    } else if (!isFamily && drinksSingle) {
-        data.drinks = drinksSingle.options[drinksSingle.selectedIndex]?.value || ''; // <-- ИСПРАВЛЕНО
+    } else if (!isFamily && editDrinksSingle) {
+        data.drinks = editDrinksSingle.options[editDrinksSingle.selectedIndex]?.value || ''; // <-- ИСПРАВЛЕНО
     }
     
     // Обработка дополнительных гостей
