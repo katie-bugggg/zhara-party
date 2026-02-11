@@ -770,10 +770,10 @@ function collectFormData() {
     // Обработка напитков
     if (isFamily && drinksMultiple) {
         const selectedOptions = Array.from(drinksMultiple.selectedOptions)
-            .map(opt => opt.text);
+            .map(opt => opt.value); // <-- ИСПРАВЛЕНО
         data.drinks = selectedOptions.join(', ');
     } else if (!isFamily && drinksSingle) {
-        data.drinks = drinksSingle.options[drinksSingle.selectedIndex]?.text || '';
+        data.drinks = drinksSingle.options[drinksSingle.selectedIndex]?.value || ''; // <-- ИСПРАВЛЕНО
     }
     
     // Обработка дополнительных гостей
