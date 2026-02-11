@@ -996,8 +996,8 @@ function handleFormSuccess(formData) {
 const radioButtons = guestForm.querySelectorAll('input[type="radio"]');
 radioButtons.forEach(radio => {
     radio.disabled = true;
-    radio.style.opacity = '0.7';
-    radio.style.cursor = 'not-allowed';
+  //  radio.style.opacity = '0.7';
+  //  radio.style.cursor = 'not-allowed';
 });
     
     // Кнопка "Я буду!" остается disabled
