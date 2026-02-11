@@ -1150,6 +1150,31 @@ select[multiple] option:checked {
     font-weight: 500;
 }
 
+/* Стили для заблокированных радио-кнопок (после отправки формы) */
+.radio-option.disabled-option {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.radio-option.disabled-option .radio-custom {
+    background-color: #f0f0f0 !important;
+    border-color: #aaa !important;
+}
+
+.radio-option.disabled-option .radio-text {
+    color: #777 !important;
+    cursor: not-allowed;
+}
+
+/* Убираем hover-эффекты для заблокированных */
+.radio-option.disabled-option:hover .radio-custom {
+    background-color: #f0f0f0 !important;
+}
+
+.radio-option.disabled-option:hover input ~ .radio-custom {
+    background-color: #f0f0f0 !important;
+}
+
 /* Стили для заблокированных полей после отправки */
 .submitted-field {
     opacity: 0.7;
