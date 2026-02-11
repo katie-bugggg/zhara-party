@@ -166,12 +166,12 @@ function populateFormWithData(formData) {
             // Для multiple select
             const drinksArray = formData.drinks.split(',').map(d => d.trim());
             Array.from(editDrinksMultiple.options).forEach(option => {
-                option.selected = drinksArray.includes(option.text);
+                option.selected = drinksArray.includes(option.value);
             });
         } else if (!isFamily && editDrinksSingle && formData.drinks) {
             // Для single select
             const optionToSelect = Array.from(editDrinksSingle.options).find(
-                option => option.text === formData.drinks
+                option => option.value === formData.drinks
             );
             if (optionToSelect) {
                 editDrinksSingle.value = optionToSelect.value;
@@ -477,7 +477,7 @@ function setupEditFormSubmitHandler() {
             
             // Валидация
             if (!validateEditFormData(formData)) {
-                alert('❌ Bitte alle Pflichtfelder (*) ausfüllen');
+               // alert('❌ Bitte alle Pflichtfelder (*) ausfüllen');
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
                 return;
@@ -546,10 +546,10 @@ function collectEditFormData() {
     // Обработка напитков
     if (isFamily && editDrinksMultiple) {
         const selectedOptions = Array.from(editDrinksMultiple.selectedOptions)
-            .map(opt => opt.text);
+            .map(opt => opt.value);
         data.drinks = selectedOptions.join(', ');
     } else if (!isFamily && editDrinksSingle) {
-        data.drinks = editDrinksSingle.options[editDrinksSingle.selectedIndex]?.text || '';
+        data.drinks = editDrinksSingle.options[editDrinksSingle.selectedIndex]?.value || '';
     }
     
     // Обработка дополнительных гостей
